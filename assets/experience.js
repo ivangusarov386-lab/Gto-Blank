@@ -59,7 +59,7 @@ async function updateScene() {
   )
     return;
   try {
-    const { mountScene } = await import("./hero-3d.js?v=bb0373822edf");
+    const { mountScene } = await import("./hero-3d.js?v=9d042f66d727");
     if (current === generation && host.getBoundingClientRect().width > 0)
       dispose = mountScene(host);
   } catch {

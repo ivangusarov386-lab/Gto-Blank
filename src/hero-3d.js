@@ -61,7 +61,7 @@ export function mountScene(host) {
   );
   const navy = track(
     new THREE.MeshStandardMaterial({
-      color: 0x24563d,
+      color: 0x284b80,
       roughness: 0.45,
       metalness: 0.15,
     }),
