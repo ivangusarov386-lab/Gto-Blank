@@ -23,6 +23,7 @@ function notify(message, error = false) {
   box.hidden = false;
   box.classList.toggle("error", error);
   box.setAttribute("role", error ? "alert" : "status");
+  box.setAttribute("aria-live", error ? "assertive" : "polite");
 }
 function readSetting(key) {
   try {
@@ -153,7 +154,7 @@ function renderNames() {
   $("printAll").textContent = `Напечатать все (${people.length})`;
 }
 function render() {
-  renderNames();
+  if (!workspaceReady) renderNames();
   const p = people[selected] || {};
   $("form").innerHTML = Object.entries(fields)
     .map(
@@ -172,7 +173,6 @@ function render() {
           if (!people[selected]) return;
           people[selected][el.dataset.field] = el.value;
           peopleChanged();
-          renderNames();
           draw();
         }),
     );
@@ -256,12 +256,21 @@ function moveField(key, x, y, element) {
     ).value = cfg[key][prop];
   }
 }
+let dragAnnounceTimer;
+function setDragStatus(message) {
+  clearTimeout(dragAnnounceTimer);
+  dragAnnounceTimer = setTimeout(() => {
+    if (!document.querySelector("dialog[open]"))
+      $("drag-status").textContent = message;
+  }, 160);
+}
 function finishMove(key) {
   save();
   draw();
   editor.querySelector(`[data-key="${key}"]`)?.focus({ preventScroll: true });
-  $("drag-status").textContent =
-    `${cfg[key].label}: X ${cfg[key].x} мм, Y ${cfg[key].y} мм. Положение обновлено.`;
+  setDragStatus(
+    `${cfg[key].label}: X ${cfg[key].x} мм, Y ${cfg[key].y} мм. Положение обновлено.`,
+  );
 }
 editor.addEventListener("pointerdown", (event) => {
   const field = event.target.closest(".movable");
@@ -304,7 +313,7 @@ function endDrag(event, cancelled = false) {
     positions();
   }
   finishMove(current.key);
-  if (cancelled) $("drag-status").textContent = "Перемещение отменено.";
+  if (cancelled) setDragStatus("Перемещение отменено.");
 }
 editor.addEventListener("pointerup", (event) => endDrag(event));
 editor.addEventListener("pointercancel", (event) => endDrag(event, true));
@@ -440,23 +449,33 @@ for (const id of ["tabWork", "tabAdmin"])
   });
 // Scale the on-screen preview only; printed millimetres remain unchanged.
 function fitPreviews() {
-  document.querySelectorAll(".preview-wrap").forEach((wrap) => {
-    if (!wrap.clientWidth) return;
-    const page = wrap.querySelector(".page");
-    const zoomed = wrap.classList.contains("is-zoomed");
-    const scale = zoomed
-      ? 1.5
-      : Math.min(
-          1,
-          (wrap.clientWidth - 32) / parseFloat(getComputedStyle(page).width),
-        );
+  // Batch geometry reads before style writes to avoid layout thrashing.
+  const layouts = [...document.querySelectorAll(".preview-wrap")]
+    .filter((wrap) => wrap.clientWidth)
+    .map((wrap) => {
+      const page = wrap.querySelector(".page"),
+        style = getComputedStyle(page);
+      const zoomed = wrap.classList.contains("is-zoomed");
+      const scale = zoomed
+        ? 1.5
+        : Math.min(1, (wrap.clientWidth - 32) / parseFloat(style.width));
+      return {
+        wrap,
+        page,
+        scale,
+        height: zoomed ? "520px" : `${parseFloat(style.height) * scale + 40}px`,
+      };
+    });
+  for (const { wrap, page, scale, height } of layouts) {
     page.style.transform = `scale(${scale})`;
-    wrap.style.height = zoomed
-      ? "520px"
-      : `${parseFloat(getComputedStyle(page).height) * scale + 40}px`;
-  });
+    wrap.style.height = height;
+  }
 }
-new ResizeObserver(fitPreviews).observe(document.querySelector("main"));
+let fitFrame;
+new ResizeObserver(() => {
+  cancelAnimationFrame(fitFrame);
+  fitFrame = requestAnimationFrame(fitPreviews);
+}).observe(document.querySelector("main"));
 $("tabAdmin").addEventListener("click", fitPreviews);
 $("tabWork").addEventListener("click", fitPreviews);
 positions();

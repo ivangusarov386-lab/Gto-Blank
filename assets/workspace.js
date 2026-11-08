@@ -346,7 +346,8 @@ async function openImport(event) {
     if (file.size > 10 * 1024 * 1024)
       throw Error("Файл слишком большой. Максимальный размер — 10 МБ.");
     $("file").disabled = true;
-    notify(`Загружаем ${file.name}…`);
+    $("import-loading").hidden = false;
+    $("feedback").hidden = true;
     pendingImport = {
       name: file.name,
       buffer: await file.arrayBuffer(),
@@ -379,6 +380,7 @@ async function openImport(event) {
     notify(err.message || "Не удалось прочитать файл.", true);
   } finally {
     $("file").disabled = false;
+    $("import-loading").hidden = true;
     $("file").value = "";
   }
 }

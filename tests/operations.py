@@ -59,13 +59,13 @@ with sync_playwright() as p:
 
  page.locator('#tabWork').click();upload(HEAD+VALID)
  assert page.evaluate('localStorage.getItem("gto-participant-draft")') is None
- page.locator('#field-surname').fill('Сохранённая');page.locator('#keepDraft').check()
+ page.locator('#field-surname').fill('Сохранённая');page.locator('.data-options summary').click();page.locator('#keepDraft').check()
  assert 'Сохранённая' in page.evaluate('localStorage.getItem("gto-participant-draft")')
  page.reload(wait_until='networkidle');expect(page.locator('#field-surname')).to_have_value('Сохранённая')
  page.locator('#field-surname').fill('Изменённая');page.locator('#undoPeople').click();expect(page.locator('#field-surname')).to_have_value('Сохранённая')
  with page.expect_download() as d:page.locator('#exportPeople').click()
  csvpath='/tmp/gto-people-export.csv';d.value.save_as(csvpath);assert 'Сохранённая' in Path(csvpath).read_text(encoding='utf-8-sig')
- page.locator('#clearPeople').click();expect(page.locator('#names .name')).to_have_count(0);assert page.evaluate('localStorage.getItem("gto-participant-draft")') is None
+ page.locator('.data-options summary').click();page.locator('#clearPeople').click();expect(page.locator('#names .name')).to_have_count(0);assert page.evaluate('localStorage.getItem("gto-participant-draft")') is None
  page.locator('#file').set_input_files(csvpath);page.locator('#applyImport').click();expect(page.locator('#field-surname')).to_have_value('Сохранённая')
  print('PASS: no default PII persistence, opt-in draft restoration, undo, full CSV export/import and deletion')
 

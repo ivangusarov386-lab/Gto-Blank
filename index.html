@@ -9,15 +9,21 @@
       content="Подготовка и печать удостоверений ГТО: импорт участников из Excel и CSV, предпросмотр и точная настройка бланка."
     />
     <meta id="excel-module" data-src="assets/excel.js?v=df6406f5510e" />
-    <meta name="theme-color" content="#142f39" />
+    <meta name="theme-color" content="#174d3b" />
     <link
       rel="icon"
       href="assets/favicon.svg?v=9d50eb49cf4a"
       type="image/svg+xml"
     />
-    <link rel="stylesheet" href="assets/styles.css?v=3bee319a420b" />
-    <link rel="stylesheet" href="assets/premium.css?v=b2ace6314c6b" />
-    <link rel="stylesheet" href="assets/workspace.css?v=251bb3d2bf37" />
+    <link rel="stylesheet" href="assets/site-v2.css?v=2fdce2b8aa10" />
+    <link
+      id="golos-preload"
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      crossorigin
+      href="assets/fonts/golos-text-cyrillic-wght-normal-IG2DBSLC.woff2"
+    />
   </head>
   <body>
     <header>
@@ -43,11 +49,11 @@
           ><small>мастерская печати</small></span
         ></a
       >
-      <div class="header-links">
+      <nav class="header-links" aria-label="О сервисе">
         <a href="#benefits">Возможности</a
         ><a href="#workflow">Как это работает</a>
-      </div>
-      <a class="header-cta" href="#studio" data-open-workspace
+      </nav>
+      <a class="header-cta" href="#workspace-title" data-open-workspace
         >Открыть редактор
         <svg
           class="icon"
@@ -66,21 +72,17 @@
       <section class="workspace-heading" aria-labelledby="hero-title">
         <div class="hero-copy">
           <span class="eyebrow"
-            ><span></span> ДЛЯ ЦЕНТРОВ ТЕСТИРОВАНИЯ ГТО</span
+            ><span></span> Для центров тестирования ГТО</span
           >
-          <h1 id="hero-title">
-            Сервис печати<br /><em>удостоверений ГТО</em>
-          </h1>
+          <h1 id="hero-title" tabindex="-1">Сервис печати удостоверений ГТО</h1>
           <p>
-            Оформляйте удостоверения так же точно,<br class="desktop-break" />
-            как фиксируете достижения. Загрузите список —<br
-              class="desktop-break"
-            />
-            и подготовьте весь тираж к печати.
+            Загрузите участников из таблицы, проверьте данные и напечатайте
+            удостоверения на готовых бланках. Настройки вашего принтера
+            сохранятся для следующего тиража.
           </p>
           <div class="hero-actions">
-            <a class="primary-cta" href="#studio" data-open-workspace
-              >Подготовить удостоверения
+            <a class="primary-cta" href="#workspace-title" data-open-workspace
+              >Открыть редактор
               <svg
                 class="icon"
                 viewBox="0 0 24 24"
@@ -104,12 +106,12 @@
           </div>
         </div>
         <div class="hero-art" aria-hidden="true">
-          <span class="scene-label"><i></i> КАЖДОЕ ДОСТИЖЕНИЕ ВАЖНО</span>
+          <span class="scene-label"><i></i> Бланк удостоверения ГТО</span>
           <div class="scene-glow"></div>
           <div class="scene-grid"></div>
           <img
             class="scene-fallback"
-            src="assets/hero-fallback.svg?v=e7a9bc96a22d"
+            src="assets/hero-fallback.svg?v=76e05beaecd7"
             width="600"
             height="530"
             alt=""
@@ -119,12 +121,12 @@
           <div class="scene-note">
             <span class="scene-check">✓</span
             ><span
-              ><strong>Готово к награждению</strong
-              ><small>Точность, достойная ваших результатов</small></span
+              ><strong>Только нужный текст</strong
+              ><small>Без печати фона и линий</small></span
             >
           </div>
           <span class="scene-dimension"
-            >138 × 99 мм <span>·</span> ВАШ БЛАНК, ВАШ СТАНДАРТ</span
+            >138 × 99 мм <span>·</span> Печать на готовом бланке</span
           >
         </div>
       </section>
@@ -169,10 +171,10 @@
           </div>
         </article>
       </section>
-      <div class="studio-heading" id="studio" tabindex="-1">
+      <div class="studio-heading" id="studio">
         <div>
-          <span class="eyebrow">ОТ СПИСКА К РЕЗУЛЬТАТУ</span>
-          <h2>Всё готово. Осталось ваше имя.</h2>
+          <span class="eyebrow">Рабочее пространство</span>
+          <h2 id="workspace-title" tabindex="-1">Подготовка к печати</h2>
         </div>
         <p>Попробуйте на примере<br />или загрузите свою таблицу.</p>
       </div>
@@ -191,7 +193,7 @@
             <path d="M6 9V3h12v6M6 17H3V9h18v8h-3M6 14h12v7H6Z" />
             <path d="M17 11h1" />
           </svg>
-          Печать удостоверений
+          Участники и печать
         </button>
         <button id="tabAdmin" aria-pressed="false">
           <svg
@@ -208,15 +210,26 @@
             <circle cx="11" cy="7" r="2" />
             <circle cx="15" cy="17" r="2" />
           </svg>
-          Настройка шаблона
+          Калибровка принтера
         </button>
       </nav>
-      <div class="workflow" id="workflow" aria-label="Этапы подготовки">
-        <span><b>01</b> Загрузите участников</span><i></i
-        ><span><b>02</b> Проверьте данные</span><i></i
-        ><span><b>03</b> Печатайте на бланках</span>
-      </div>
-      <div id="feedback" role="status" aria-live="polite" hidden></div>
+      <ol
+        role="list"
+        class="workflow"
+        id="workflow"
+        aria-label="Этапы подготовки"
+      >
+        <li><b>1</b> Загрузите участников</li>
+        <li><b>2</b> Проверьте данные</li>
+        <li><b>3</b> Напечатайте удостоверения</li>
+      </ol>
+      <div
+        id="feedback"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        hidden
+      ></div>
       <section class="panel" id="work-panel">
         <h2><span class="step-number">01</span> Данные участников</h2>
         <div class="stack">
@@ -274,7 +287,7 @@
               CSV-шаблон
             </button>
           </div>
-          <div>
+          <search>
             <label for="search">Поиск по имени или номеру</label
             ><input
               id="search"
@@ -282,7 +295,12 @@
               placeholder="Например, Абакумова"
               autocomplete="off"
             />
-          </div>
+          </search>
+          <progress
+            id="import-loading"
+            aria-label="Чтение таблицы участников"
+            hidden
+          ></progress>
           <div class="row data-actions">
             <button id="exportPeople" class="secondary">
               Скачать заполненный CSV</button
@@ -290,35 +308,32 @@
               Отменить правку
             </button>
           </div>
-          <label class="check-label"
-            ><input id="keepDraft" type="checkbox" /> Разрешить локальный
-            черновик: восстановление в течение 24 часов</label
-          >
-          <p id="data-state" class="note" role="status">
-            Участники хранятся в памяти страницы. Скачайте CSV перед закрытием.
-          </p>
-          <button id="clearPeople" class="text-button" type="button">
-            Удалить список и локальный черновик
-          </button>
+          <details class="data-options">
+            <summary>Хранение участников на устройстве</summary>
+            <label class="check-label"
+              ><input id="keepDraft" type="checkbox" /> Разрешить локальный
+              черновик: восстановление в течение 24 часов</label
+            >
+            <p id="data-state" class="note">
+              Участники хранятся в памяти страницы. Скачайте CSV перед
+              закрытием.
+            </p>
+            <button id="clearPeople" class="text-button" type="button">
+              Удалить список и локальный черновик
+            </button>
+          </details>
           <div class="names" id="names" aria-label="Участники"></div>
-          <div class="status" id="status" aria-live="polite">
-            Загружен демонстрационный пример
-          </div>
+          <div class="status" id="status">Загружен демонстрационный пример</div>
         </div>
         <div class="divider"></div>
-        <h2><span class="step-number">02</span> Данные удостоверения</h2>
+        <h2><span class="step-number">02</span> Запись участника</h2>
         <div class="grid2" id="form"></div>
         <p class="note">
           Отчество необязательно. Даты: ДД.ММ.ГГГГ. Ступень: I–XVIII или 1–18.
         </p>
         <div class="divider"></div>
-        <h2><span class="step-number">03</span> Всё готово к печати</h2>
-        <div
-          id="validation"
-          class="validation-box"
-          role="status"
-          tabindex="-1"
-        ></div>
+        <h2><span class="step-number">03</span> Печать</h2>
+        <div id="validation" class="validation-box" tabindex="-1"></div>
         <div class="grid2">
           <button id="printOne">Напечатать выбранное</button
           ><button id="printAll" class="secondary">Напечатать все</button>
@@ -423,7 +438,7 @@
         <div class="profile-tools">
           <label for="profileSelect">Сохранённый принтер</label
           ><select id="profileSelect"></select>
-          <p id="profile-state" class="note" role="status"></p>
+          <p id="profile-state" class="note"></p>
           <div class="row">
             <button id="deleteProfile" class="secondary" disabled>
               Удалить профиль
@@ -602,6 +617,7 @@
         <h2 id="import-title">Проверьте импорт</h2>
         <button
           id="cancelImport"
+          autofocus
           class="secondary"
           aria-label="Отменить импорт"
         >
@@ -652,15 +668,16 @@
         Сначала проверьте один бланк.
       </p>
       <div class="dialog-actions">
-        <button id="cancelPrint" class="secondary">Вернуться к проверке</button
+        <button id="cancelPrint" autofocus class="secondary">
+          Вернуться к проверке</button
         ><button id="confirmPrint">Печатать</button>
       </div>
     </dialog>
     <div id="measure-root" aria-hidden="true"></div>
     <div id="print-root" style="display: none"></div>
     <script src="assets/data.js?v=c2028d4a67fd" defer></script>
-    <script src="assets/workspace.js?v=b153ba8098c2" defer></script>
-    <script src="assets/app.js?v=828baaecee2a" defer></script>
-    <script type="module" src="assets/experience.js?v=6eeaac402387"></script>
+    <script src="assets/workspace.js?v=5d5c2b6e76bd" defer></script>
+    <script src="assets/app.js?v=c41003dd213d" defer></script>
+    <script type="module" src="assets/experience.js?v=6aea4165807f"></script>
   </body>
 </html>

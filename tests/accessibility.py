@@ -24,7 +24,7 @@ with sync_playwright() as p:
  page.locator('#tabWork').click()
  loaded=[]
  def observe_excel(route):
-  loaded.append(page.locator('#file').is_disabled() and 'Загружаем' in page.locator('#feedback').inner_text())
+  loaded.append(page.locator('#file').is_disabled() and page.locator('#import-loading').is_visible())
   route.continue_()
  page.route('**/assets/excel.js*',observe_excel)
  page.locator('#file').set_input_files('/tmp/gto-fixture.xlsx')

@@ -32,7 +32,27 @@ experience = experience.replace(
   `./hero-3d.js?v=${digest(file)}`,
 );
 await writeFile(experiencePath, experience);
+const styleBuild = await build({
+  entryPoints: ["src/site-v2.css"],
+  outfile: "assets/site-v2.css",
+  bundle: true,
+  minify: true,
+  metafile: true,
+  loader: { ".woff2": "file" },
+  assetNames: "fonts/[name]-[hash]",
+  target: ["chrome120", "firefox128", "safari17"],
+});
+const cyrillicFont = Object.keys(styleBuild.metafile.outputs).find(
+  (path) =>
+    path.includes("golos-text-cyrillic-wght") && path.endsWith(".woff2"),
+);
+if (!cyrillicFont) throw Error("Critical Cyrillic font was not emitted");
 let html = await readFile("index.html", "utf8");
+html = html.replace(
+  /(<link\b(?=[^>]*\bid="golos-preload")[^>]*\bhref=")[^"]+("[^>]*>)/s,
+  `$1${cyrillicFont}$2`,
+);
+
 const assets = [
   ...new Set(
     [

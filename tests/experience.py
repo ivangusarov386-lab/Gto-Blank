@@ -21,12 +21,15 @@ with sync_playwright() as p:
     page.locator('#tabAdmin').click()
     page.locator('.header-cta').click()
     expect(page.locator('#tabWork')).to_have_attribute('aria-pressed','true')
-    expect(page.locator('#studio')).to_be_focused()
+    expect(page.locator('#workspace-title')).to_be_focused()
     expect(page.locator('#work-panel')).to_be_visible()
     page.goto(URL,wait_until='networkidle')
     page.locator('.secondary-cta').click()
     expect(page.locator('#operator-preview')).to_be_focused()
-    print('PASS: editor and example CTAs work from either mode')
+    expect(page.locator('#hero-canvas canvas')).to_have_count(0)
+    page.goto(URL,wait_until='networkidle')
+    expect(page.locator('.hero-art')).to_have_class('hero-art scene-ready', timeout=15000)
+    print('PASS: editor and example CTAs work; entering editor disposes the scene')
 
     page.evaluate("document.querySelector('#hero-canvas canvas').getContext('webgl2').getExtension('WEBGL_lose_context').loseContext()")
     expect(page.locator('#hero-canvas canvas')).to_have_count(0)
@@ -64,7 +67,7 @@ with sync_playwright() as p:
     offline.wait_for_timeout(1000)
     expect(offline.locator('.scene-fallback')).to_have_css('opacity','1')
     offline.locator('.primary-cta').click()
-    expect(offline.locator('#studio')).to_be_focused()
+    expect(offline.locator('#workspace-title')).to_be_focused()
     fallback.close()
     assert not errors, errors
     assert not bad_responses, bad_responses
