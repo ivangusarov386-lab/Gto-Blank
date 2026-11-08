@@ -1,9 +1,269 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ГТО · Печать удостоверений</title><style>
-:root{font-family:Inter,Arial,sans-serif;color:#182c41;background:#f2f6fa}*{box-sizing:border-box}body{margin:0}header{padding:20px max(20px,calc((100vw - 1300px)/2));background:#102c4d;color:white;display:flex;align-items:center;gap:16px}header b{font-size:23px}header small{opacity:.75}main{max-width:1320px;margin:auto;padding:22px;display:grid;grid-template-columns:minmax(300px,400px) minmax(400px,1fr);gap:20px}.panel{border:1px solid #dae3eb;border-radius:16px;background:white;padding:20px;box-shadow:0 6px 25px #193a5e0b}h2{font-size:16px;margin:0 0 16px}h3{font-size:14px;margin:20px 0 10px}label{display:block;font-size:12px;font-weight:700;color:#50647a;margin:0 0 5px}input,select{font:inherit;width:100%;border:1px solid #cbd7e3;border-radius:8px;padding:10px;background:#fff;color:#233a51}input[type=file]{padding:9px}button{cursor:pointer;border:0;border-radius:10px;padding:11px 14px;font:inherit;font-weight:700;background:#f0a438;color:#122b41}button.secondary{background:#e8eff5;color:#24405d}button:disabled{opacity:.45;cursor:not-allowed}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stack{display:grid;gap:12px}.note{font-size:12px;line-height:1.55;color:#68798b}.divider{border-top:1px solid #e5ebf1;margin:20px 0}.names{max-height:185px;overflow-y:auto;border:1px solid #dce5ed;border-radius:10px}.name{padding:9px 12px;border-bottom:1px solid #e9eff5;cursor:pointer;font-size:13px}.name:hover,.name.active{background:#e9f4fc}.preview-wrap{background:#e7edf2;border-radius:12px;overflow:auto;padding:18px;min-height:365px;display:flex;justify-content:center;align-items:center}.page{position:relative;width:138mm;height:99mm;flex-shrink:0;background:#dce9ed;border:1px solid #92a8b7;box-shadow:0 8px 20px #1b405329;transform-origin:center;overflow:hidden}.page:before{content:'';position:absolute;left:50%;top:0;height:100%;border-left:1px dashed #88a2b6}.page:after{content:'Левая половина — знак ГТО';position:absolute;left:6mm;top:45mm;font-size:10px;color:#a3b4be}.field{position:absolute;font-family:'Times New Roman',serif;color:#102d41;white-space:nowrap;line-height:1;font-weight:700}.guides .field{outline:1px dashed #e08a30;background:#fff9dcaa}.right-half{position:absolute;left:69mm;top:0;width:69mm;height:99mm;border-left:0 solid transparent;pointer-events:none}.booklabel{position:absolute;top:7mm;left:83mm;width:50mm;text-align:center;font:bold 9px/1.25 Georgia,serif;color:#4e6372}.sublabel{position:absolute;left:83mm;top:23mm;font:bold 10px Georgia,serif;color:#4e6372}.line{position:absolute;left:78mm;width:55mm;border-bottom:1px solid #718c9b}.otherlabel{position:absolute;top:54mm;left:87mm;font:bold 9px Georgia,serif;color:#4e6372}.controls{display:grid;grid-template-columns:1.5fr .7fr .7fr .8fr;gap:7px;align-items:center;margin:7px 0}.controls input{padding:6px;font-size:12px}.controls span{font-size:12px}.status{font-size:12px;color:#287a50;padding:8px 0}.tag{padding:5px 9px;background:#e3eff8;border-radius:30px;font-size:11px;font-weight:bold}.printhelp{background:#fff6e9;border:1px solid #f0dfc1;padding:12px;border-radius:10px;font-size:12px;line-height:1.5;margin-top:14px}.wide{width:100%}@media(max-width:900px){main{grid-template-columns:1fr}.preview-wrap{justify-content:flex-start}header{padding:18px}}
-@media print{@page{size:138mm 99mm;margin:0}body{background:white!important}header,main,.panel,.preview-wrap{display:none!important}#print-root{display:block!important}.print-sheet{width:138mm;height:99mm;position:relative;page-break-after:always;break-after:page}.print-sheet .field{position:absolute;color:black!important;font-family:'Times New Roman',serif;font-weight:700;white-space:nowrap;line-height:1}.print-sheet:last-child{page-break-after:auto;break-after:auto}}
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ГТО · Печать удостоверений</title>
+    <meta
+      name="description"
+      content="Подготовка и печать удостоверений ГТО: импорт участников из Excel и CSV, предпросмотр и точная настройка бланка."
+    />
+    <meta name="theme-color" content="#102c4d" />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header>
+      <span style="font-size: 32px">🏅</span>
+      <div>
+        <b>ГТО · Печать удостоверений</b>
+        <div><small>Участники и печать — в одном месте</small></div>
+      </div>
+    </header>
+    <a class="skip-link" href="#main">Перейти к содержимому</a>
+    <nav aria-label="Режим работы">
+      <button id="tabWork" class="active" aria-pressed="true">
+        Печать удостоверений</button
+      ><button id="tabAdmin" aria-pressed="false">Настройка шаблона</button>
+    </nav>
+    <main id="main">
+      <div class="workspace-heading">
+        <div>
+          <span class="eyebrow">РАБОЧЕЕ ПРОСТРАНСТВО</span>
+          <h1>Удостоверения без лишних шагов</h1>
+          <p>
+            Загрузите список, проверьте данные и подготовьте бланки к печати.
+          </p>
+        </div>
+        <span class="privacy-badge">● Данные остаются в браузере</span>
+      </div>
+      <div id="feedback" role="status" aria-live="polite" hidden></div>
+      <section class="panel" id="work-panel">
+        <h2>1. Данные участников</h2>
+        <div class="stack">
+          <div>
+            <label for="file">Загрузить таблицу участников</label
+            ><input id="file" type="file" accept=".xlsx,.xls,.csv" />
+            <div class="note">
+              Excel читается через библиотеку SheetJS (при первом открытии нужен
+              интернет). CSV работает без интернета.
+            </div>
+          </div>
+          <div class="row">
+            <button class="secondary" id="demo">Показать пример</button
+            ><button class="secondary" id="csv">Скачать CSV-шаблон</button>
+          </div>
+          <div>
+            <label for="search">Поиск по имени или номеру</label
+            ><input
+              id="search"
+              type="search"
+              placeholder="Например, Абакумова"
+              autocomplete="off"
+            />
+          </div>
+          <div class="names" id="names" aria-label="Участники"></div>
+          <div class="status" id="status" aria-live="polite">
+            Загружен демонстрационный пример
+          </div>
+        </div>
+        <div class="divider"></div>
+        <h2>2. Редактирование записи</h2>
+        <div class="grid2" id="form"></div>
+        <div class="divider"></div>
+        <h2>3. Печать на готовых бланках</h2>
+        <div class="grid2">
+          <button id="printOne">Напечатать выбранное</button
+          ><button id="printAll" class="secondary">Напечатать все</button>
+        </div>
+        <div class="printhelp">
+          Важно: включите масштаб 100% / «Фактический размер», отключите
+          колонтитулы. Размер бумаги 138 × 99 мм должен поддерживаться драйвером
+          принтера. Сначала протестируйте печать на обычной бумаге.
+        </div>
+      </section>
 
-nav{display:flex;gap:10px;padding:12px max(20px,calc((100vw - 1300px)/2));background:#e6eef5;border-bottom:1px solid #cad8e3}nav button{background:white;border:1px solid #cbd7e3;color:#24405d}nav button.active{background:#102c4d;color:white}.admin-only{display:none}body.admin-mode .admin-only{display:block}body.admin-mode #work-panel,body.admin-mode #operator-preview{display:none}body:not(.admin-mode) #admin-panel{display:none}body.admin-mode main{display:block;max-width:1220px}body.admin-mode #admin-panel{width:100%}body.admin-mode .preview-wrap{min-height:340px}.admin-grid{display:grid;grid-template-columns:minmax(320px,1fr) minmax(360px,1fr);gap:20px}.mutedbox{padding:12px;background:#fff4e5;border:1px solid #ead2b4;border-radius:10px;font-size:13px;line-height:1.5;margin:14px 0}#page{scale:.95}body.admin-mode #page{scale:.95}#print-root{display:none!important}@media(max-width:900px){.admin-grid{grid-template-columns:1fr}}@media print{nav{display:none!important}#print-root{display:block!important}#page{scale:1}}
-</style></head><body><header><span style="font-size:32px">🏅</span><div><b>ГТО · Печать удостоверений</b><div><small>Локальный прототип • данные не отправляются на сервер</small></div></div></header><nav><button id="tabWork" class="active">Печать удостоверений</button><button id="tabAdmin">Настройка шаблона</button></nav><main><section class="panel" id="work-panel"><h2>1. Данные участников</h2><div class="stack"><div><label>Excel (.xlsx, .xls) или CSV</label><input id="file" type="file" accept=".xlsx,.xls,.csv"/><div class="note">Excel читается через библиотеку SheetJS (при первом открытии нужен интернет). CSV работает без интернета.</div></div><div class="row"><button class="secondary" id="demo">Показать пример</button><button class="secondary" id="csv">Скачать CSV-шаблон</button></div><div><label>Найти участника</label><input id="search" placeholder="Фамилия или номер"/></div><div class="names" id="names"></div><div class="status" id="status">Загружен демонстрационный пример</div></div><div class="divider"></div><h2>2. Редактирование записи</h2><div class="grid2" id="form"></div><div class="divider"></div><h2>3. Печать на готовых бланках</h2><div class="grid2"><button id="printOne">Напечатать выбранное</button><button id="printAll" class="secondary">Напечатать все</button></div><div class="printhelp">Важно: включите масштаб 100% / «Фактический размер», отключите колонтитулы. Размер бумаги 138 × 99 мм должен поддерживаться драйвером принтера. Сначала протестируйте печать на обычной бумаге.</div></section><section class="panel" id="operator-preview"><h2>Предпросмотр заполнения</h2><p class="note">Макет схематический. Печататься будет только текст, без изображения удостоверения.</p><div class="preview-wrap"><div class="page" id="pageOperator"><div class="booklabel">МИНИСТЕРСТВО СПОРТА<br>РОССИЙСКОЙ ФЕДЕРАЦИИ</div><div class="sublabel">УДОСТОВЕРЕНИЕ №</div><div class="line" style="top:36mm"></div><div class="line" style="top:41.3mm"></div><div class="line" style="top:46.6mm"></div><div class="otherlabel">НАГРАЖДЕН(А) ЗОЛОТЫМ ЗНАКОМ<br>ОТЛИЧИЯ ГТО</div><div style="position:absolute;left:91mm;top:65mm;font:700 10px Georgia;color:#566b79">СТУПЕНИ</div><div style="position:absolute;left:78mm;top:75mm;font:9px Georgia;color:#687e8e">Приказ от</div><div style="position:absolute;left:89mm;top:87mm;font:9px Georgia;color:#687e8e">М.П. _______ г.</div></div></div><div class="printhelp">Сначала распечатайте на обычной бумаге и проверьте совмещение с оригиналом на просвет. Не вставляйте книжку в принтер, пока не проверите допустимую толщину и минимальный формат носителя.</div></section><section class="panel" id="admin-panel"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Настройка шаблона и калибровка</h2><span class="tag">Разворот 138 × 99 мм</span></div><div class="mutedbox">Режим администратора в этой демонстрации отделён интерфейсно, но <b>не защищён серверной авторизацией</b>. Для рабочего сайта потребуется вход администратора и сохранение прав доступа на сервере.</div><div class="row" style="margin-bottom:14px"><div><label>Название профиля принтера</label><input id="profileName" placeholder="Например, Принтер в кабинете" value="Основной принтер"></div><button class="secondary" id="saveProfile" style="flex:0;align-self:end">Сохранить профиль</button></div><p class="note">На экране показан ориентировочный разворот. При печати выводится <b>только переменный текст</b>, без фона и линий.</p><div class="preview-wrap"><div class="page guides" id="page"><div class="booklabel">МИНИСТЕРСТВО СПОРТА<br>РОССИЙСКОЙ ФЕДЕРАЦИИ</div><div class="sublabel">УДОСТОВЕРЕНИЕ №</div><div class="line" style="top:36mm"></div><div class="line" style="top:41.3mm"></div><div class="line" style="top:46.6mm"></div><div class="otherlabel">НАГРАЖДЕН(А) ЗОЛОТЫМ ЗНАКОМ<br>ОТЛИЧИЯ ГТО</div><div style="position:absolute;left:91mm;top:65mm;font:700 10px Georgia;color:#566b79">СТУПЕНИ</div><div style="position:absolute;left:78mm;top:75mm;font:9px Georgia;color:#687e8e">Приказ от</div><div style="position:absolute;left:89mm;top:87mm;font:9px Georgia;color:#687e8e">М.П. _______ г.</div></div></div><div class="row" style="margin-top:14px"><label style="display:flex;gap:8px;align-items:center;margin:0"><input id="guides" type="checkbox" checked style="width:auto">Подсветить области текста</label><button class="secondary" id="reset" style="flex:0">Сбросить координаты</button></div><p class="note">X и Y — положение левого верхнего угла поля в миллиметрах от левого верхнего края всего разворота. Размер шрифта — в пунктах (pt).</p><div class="controls" style="font-weight:700;color:#51667a"><span>Поле</span><span>X, мм</span><span>Y, мм</span><span>Шрифт</span></div><div id="positions"></div><div class="divider"></div><h2>5. Смещение принтера</h2><div class="grid2"><div><label>Сдвиг всех полей X (мм)</label><input id="dx" type="number" step="0.2" value="0"></div><div><label>Сдвиг всех полей Y (мм)</label><input id="dy" type="number" step="0.2" value="0"></div></div><p class="note">Профиль и калибровка сохраняются только в этом браузере. Для реальной работы понадобятся измерения конкретного бланка и тестовая распечатка.</p></section></main><div id="print-root" style="display:none"></div><script>
-const defaults={number:{label:'Номер',x:116,y:26,size:10},surname:{label:'Фамилия',x:79,y:35,size:11},first:{label:'Имя',x:79,y:40.2,size:11},middle:{label:'Отчество',x:79,y:45.4,size:11},level:{label:'Ступень',x:92,y:64,size:10},orderDate:{label:'Дата приказа',x:91,y:73.4,size:9},orderNumber:{label:'Номер приказа',x:119,y:73.4,size:9},issued:{label:'Дата выдачи',x:108,y:87,size:9}};
-let saved;try{saved=JSON.parse(localStorage.getItem('gto-print-config'))}catch{};let cfg=saved?.fields||saved||structuredClone(defaults);for(const k in defaults)if(!cfg[k])cfg[k]={...defaults[k]};let people=[],selected=0;let offset=saved?.offset||{dx:0,dy:0};const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const save=()=>localStorage.setItem('gto-print-config',JSON.stringify({fields:cfg,offset}));function sample(){people=[{number:'АР103731',surname:'Абакумова',first:'Елизавета',middle:'Сергеевна',level:'V',orderDate:'16.07.2025',orderNumber:'153 НГ',issued:'24.06.2026'},{number:'АР102413',surname:'Саврыкин',first:'Семён',middle:'Михайлович',level:'VI',orderDate:'16.07.2025',orderNumber:'153 НГ',issued:'24.06.2026'},{number:'АР117454',surname:'СКОРНЯКОВ',first:'Дмитрий',middle:'АЛЕКСАНДРОВИЧ',level:'VI',orderDate:'16.07.2025',orderNumber:'153 НГ',issued:'24.06.2026'}];selected=0;render()};const fields={number:'Номер удостоверения',surname:'Фамилия',first:'Имя',middle:'Отчество',level:'Ступень',orderDate:'Дата приказа',orderNumber:'Номер приказа',issued:'Дата выдачи'};function render(){const q=$('search').value.trim().toLowerCase();$('names').innerHTML=people.map((p,i)=>({p,i})).filter(({p})=>(Object.values(p).join(' ')).toLowerCase().includes(q)).map(({p,i})=>`<div class="name ${i===selected?'active':''}" data-index="${i}">${esc(p.surname)} ${esc(p.first)} ${esc(p.middle)} · ${esc(p.number)}</div>`).join('');$('names').querySelectorAll('[data-index]').forEach(el=>el.onclick=()=>{selected=Number(el.dataset.index);render()});$('status').textContent=`Записей: ${people.length}. Выбрана: ${selected+1}`;const p=people[selected]||{};$('form').innerHTML=Object.entries(fields).map(([k,l])=>`<div><label>${l}</label><input data-field="${k}" value="${esc(p[k])}"></div>`).join('');$('form').querySelectorAll('input').forEach(el=>el.oninput=()=>{if(!people[selected])return;people[selected][el.dataset.field]=el.value;draw();});draw()};function markup(p,print=false){return Object.keys(defaults).map(k=>{const f=cfg[k],x=Number(f.x)+offset.dx,y=Number(f.y)+offset.dy;return `<div class="field" style="left:${x}mm;top:${y}mm;font-size:${Number(f.size)}pt">${esc(p[k])}</div>`}).join('')};function draw(){for(const id of ['page','pageOperator']){const page=$(id);if(!page)continue;page.querySelectorAll('.field').forEach(x=>x.remove());page.insertAdjacentHTML('beforeend',markup(people[selected]||{}))}};function positions(){const root=$('positions');root.innerHTML=Object.entries(cfg).map(([k,v])=>`<div class="controls"><span>${esc(v.label)}</span>${['x','y','size'].map(t=>`<input aria-label="${t} ${esc(v.label)}" type="number" step="${t==='size'?0.5:0.2}" data-key="${k}" data-prop="${t}" value="${v[t]}">`).join('')}</div>`).join('');root.querySelectorAll('input').forEach(input=>input.oninput=()=>{const n=Number(input.value);if(!Number.isFinite(n))return;cfg[input.dataset.key][input.dataset.prop]=n;save();draw()})};$('guides').onchange=e=>$('page').classList.toggle('guides',e.target.checked);$('reset').onclick=()=>{cfg=structuredClone(defaults);offset={dx:0,dy:0};$('dx').value=$('dy').value=0;save();positions();draw()};for(const k of ['dx','dy'])$(k).oninput=e=>{offset[k]=Number(e.target.value)||0;save();draw()};$('search').oninput=render;$('demo').onclick=sample;function toCSV(){const headings=['Номер удостоверения','Фамилия','Имя','Отчество','Ступень','Приказ день','Приказ месяц','Приказ год','Номер приказа','Выдача день','Выдача месяц','Выдача год'];const blob=new Blob(['\ufeff'+headings.join(';')+'\n'],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='gto_template.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}$('csv').onclick=toCSV;function val(row,names){const keys=Object.keys(row);for(const wanted of names){const found=keys.find(k=>String(k).trim().toLowerCase().includes(wanted));if(found!==undefined&&row[found]!==undefined)return String(row[found]).trim()}return ''}function dateParts(row,prefix){const day=val(row,[prefix+' день',prefix+' дн',prefix+' day']),month=val(row,[prefix+' месяц',prefix+' мес',prefix+' month']),year=val(row,[prefix+' год',prefix+' year']);if(!day&&!month&&!year)return val(row,[prefix+' дата','дата '+prefix]);return [day,month,year].filter(Boolean).map((x,i)=>i<2?x.padStart(2,'0'):x).join('.')};function parseRows(rows){const result=rows.map(r=>({number:val(r,['номер удостоверения','удостоверен','certificate']),surname:val(r,['фамилия','surname']),first:val(r,['имя','first']),middle:val(r,['отчество','middle']),level:val(r,['ступень','level']),orderDate:dateParts(r,'приказ'),orderNumber:val(r,['номер приказ','приказ номер','order number']),issued:dateParts(r,'выдача')})).filter(p=>p.surname||p.number);if(!result.length)throw Error('Не распознаны столбцы с данными. Проверьте заголовки таблицы.');people=result;selected=0;render()};function parseDelimited(text){const lines=text.replace(/^\ufeff/,'').split(/\r?\n/).filter(Boolean);const sep=(lines[0].match(/;/g)||[]).length>=(lines[0].match(/,/g)||[]).length?';':',';function split(line){let arr=[],s='',quote=false;for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'){if(quote&&line[i+1]==='"'){s+='"';i++}else quote=!quote}else if(c===sep&&!quote){arr.push(s);s=''}else s+=c}arr.push(s);return arr};const head=split(lines.shift());return lines.map(line=>Object.fromEntries(split(line).map((v,i)=>[head[i]||`col${i}`,v])))}function loadXlsx(){return new Promise((resolve,reject)=>{if(window.XLSX)return resolve();const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';s.onload=resolve;s.onerror=()=>reject(Error('Не удалось загрузить библиотеку Excel. Сохраните файл как CSV и повторите.'));document.head.append(s)})};$('file').onchange=async(e)=>{const file=e.target.files?.[0];if(!file)return;try{if(/\.csv$/i.test(file.name)){parseRows(parseDelimited(await file.text()))}else{await loadXlsx();const data=await file.arrayBuffer();const wb=XLSX.read(data,{type:'array',cellDates:false});const ws=wb.Sheets[wb.SheetNames[0]];parseRows(XLSX.utils.sheet_to_json(ws,{defval:'',raw:false}))}}catch(err){alert(err.message)}};function doPrint(all){if(!people.length)return;const arr=all?people:[people[selected]];const root=$('print-root');root.innerHTML=arr.map(p=>`<section class="print-sheet">${markup(p,true)}</section>`).join('');root.style.display='block';window.print();setTimeout(()=>{root.style.display='none'},200)}$('printOne').onclick=()=>doPrint(false);$('printAll').onclick=()=>doPrint(true);window.onafterprint=()=>$('print-root').style.display='none';$('tabWork').onclick=()=>{document.body.classList.remove('admin-mode');$('tabWork').classList.add('active');$('tabAdmin').classList.remove('active')};$('tabAdmin').onclick=()=>{document.body.classList.add('admin-mode');$('tabAdmin').classList.add('active');$('tabWork').classList.remove('active');draw()};$('dx').value=offset.dx;$('dy').value=offset.dy;$('profileName').value=localStorage.getItem('gto-profile-name')||'Основной принтер';$('saveProfile').onclick=()=>{localStorage.setItem('gto-profile-name',$('profileName').value.trim()||'Основной принтер');save();alert('Настройки сохранены в этом браузере')};positions();sample();
-</script></body></html>
+      <section class="panel" id="operator-preview">
+        <div class="preview-heading">
+          <h2>Предпросмотр удостоверения</h2>
+          <span class="tag">138 × 99 мм</span>
+        </div>
+        <div id="preview-person" class="preview-person"></div>
+        <p class="note">
+          Макет схематический. Печататься будет только текст, без изображения
+          удостоверения.
+        </p>
+        <div class="preview-wrap">
+          <div class="page" id="pageOperator">
+            <div class="booklabel">
+              МИНИСТЕРСТВО СПОРТА<br />РОССИЙСКОЙ ФЕДЕРАЦИИ
+            </div>
+            <div class="sublabel">УДОСТОВЕРЕНИЕ №</div>
+            <div class="line" style="top: 36mm"></div>
+            <div class="line" style="top: 41.3mm"></div>
+            <div class="line" style="top: 46.6mm"></div>
+            <div class="otherlabel">
+              НАГРАЖДЕН(А) ЗОЛОТЫМ ЗНАКОМ<br />ОТЛИЧИЯ ГТО
+            </div>
+            <div
+              style="
+                position: absolute;
+                left: 91mm;
+                top: 65mm;
+                font: 700 10px Georgia;
+                color: #566b79;
+              "
+            >
+              СТУПЕНИ
+            </div>
+            <div
+              style="
+                position: absolute;
+                left: 78mm;
+                top: 75mm;
+                font: 9px Georgia;
+                color: #687e8e;
+              "
+            >
+              Приказ от
+            </div>
+            <div
+              style="
+                position: absolute;
+                left: 89mm;
+                top: 87mm;
+                font: 9px Georgia;
+                color: #687e8e;
+              "
+            >
+              М.П. _______ г.
+            </div>
+          </div>
+        </div>
+        <div class="printhelp">
+          Сначала распечатайте на обычной бумаге и проверьте совмещение с
+          оригиналом на просвет. Не вставляйте книжку в принтер, пока не
+          проверите допустимую толщину и минимальный формат носителя.
+        </div>
+      </section>
+
+      <section class="panel" id="admin-panel">
+        <div class="row" style="justify-content: space-between">
+          <h2 style="margin: 0">Настройка шаблона и калибровка</h2>
+          <span class="tag">Разворот 138 × 99 мм</span>
+        </div>
+        <div class="mutedbox">
+          Настройте положение текста под ваш бланк и принтер. Калибровка
+          сохраняется в этом браузере. Перед печатью тиража проверьте один
+          экземпляр на обычной бумаге.
+        </div>
+        <div class="row" style="margin-bottom: 14px">
+          <div>
+            <label>Название профиля принтера</label
+            ><input
+              id="profileName"
+              placeholder="Например, Принтер в кабинете"
+              value="Основной принтер"
+            />
+          </div>
+          <button
+            class="secondary"
+            id="saveProfile"
+            style="flex: 0; align-self: end"
+          >
+            Сохранить профиль
+          </button>
+        </div>
+        <p class="note">
+          На экране показан ориентировочный разворот. При печати выводится
+          <b>только переменный текст</b>, без фона и линий.
+        </p>
+        <div class="preview-wrap">
+          <div class="page guides" id="page">
+            <div class="booklabel">
+              МИНИСТЕРСТВО СПОРТА<br />РОССИЙСКОЙ ФЕДЕРАЦИИ
+            </div>
+            <div class="sublabel">УДОСТОВЕРЕНИЕ №</div>
+            <div class="line" style="top: 36mm"></div>
+            <div class="line" style="top: 41.3mm"></div>
+            <div class="line" style="top: 46.6mm"></div>
+            <div class="otherlabel">
+              НАГРАЖДЕН(А) ЗОЛОТЫМ ЗНАКОМ<br />ОТЛИЧИЯ ГТО
+            </div>
+            <div
+              style="
+                position: absolute;
+                left: 91mm;
+                top: 65mm;
+                font: 700 10px Georgia;
+                color: #566b79;
+              "
+            >
+              СТУПЕНИ
+            </div>
+            <div
+              style="
+                position: absolute;
+                left: 78mm;
+                top: 75mm;
+                font: 9px Georgia;
+                color: #687e8e;
+              "
+            >
+              Приказ от
+            </div>
+            <div
+              style="
+                position: absolute;
+                left: 89mm;
+                top: 87mm;
+                font: 9px Georgia;
+                color: #687e8e;
+              "
+            >
+              М.П. _______ г.
+            </div>
+          </div>
+        </div>
+        <div class="row" style="margin-top: 14px">
+          <label style="display: flex; gap: 8px; align-items: center; margin: 0"
+            ><input
+              id="guides"
+              type="checkbox"
+              checked
+              style="width: auto"
+            />Подсветить области текста</label
+          ><button class="secondary" id="reset" style="flex: 0">
+            Сбросить координаты
+          </button>
+        </div>
+        <p class="note">
+          X и Y — положение левого верхнего угла поля в миллиметрах от левого
+          верхнего края всего разворота. Размер шрифта — в пунктах (pt).
+        </p>
+        <div class="controls" style="font-weight: 700; color: #51667a">
+          <span>Поле</span><span>X, мм</span><span>Y, мм</span
+          ><span>Шрифт</span>
+        </div>
+        <div id="positions"></div>
+        <div class="divider"></div>
+        <h2>Смещение принтера</h2>
+        <div class="grid2">
+          <div>
+            <label>Сдвиг всех полей X (мм)</label
+            ><input id="dx" type="number" step="0.2" value="0" />
+          </div>
+          <div>
+            <label>Сдвиг всех полей Y (мм)</label
+            ><input id="dy" type="number" step="0.2" value="0" />
+          </div>
+        </div>
+        <p class="note">
+          Профиль и калибровка сохраняются только в этом браузере. Для реальной
+          работы понадобятся измерения конкретного бланка и тестовая распечатка.
+        </p>
+      </section>
+    </main>
+    <div id="print-root" style="display: none"></div>
+    <script src="assets/app.js" defer></script>
+  </body>
+</html>

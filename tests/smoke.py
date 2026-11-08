@@ -1,0 +1,90 @@
+"""Run with the webapp-testing with_server.py helper; requires Playwright + Chromium."""
+import os
+from pathlib import Path
+from playwright.sync_api import sync_playwright, expect
+
+with sync_playwright() as p:
+    browser = p.chromium.launch(headless=True, executable_path=os.environ.get('CHROMIUM_PATH', '/usr/bin/chromium'))
+    page = browser.new_page(viewport={'width': 1440, 'height': 1050})
+    errors = []
+    page.on('pageerror', lambda error: errors.append(str(error)))
+    page.on('dialog', lambda dialog: dialog.accept())
+    page.goto('http://127.0.0.1:8950', wait_until='networkidle')
+    expect(page.locator('#names .name')).to_have_count(3)
+    page.locator('#field-surname').fill('Петрова')
+    expect(page.locator('#names .name').first).to_contain_text('Петрова')
+    expect(page.locator('#preview-person')).to_contain_text('Петрова')
+    page.locator('#search').fill('несуществующий участник')
+    expect(page.locator('.empty-state')).to_be_visible()
+    page.locator('#search').fill('Саврыкин')
+    expect(page.locator('#names .name')).to_have_count(1)
+    page.locator('#names .name').click()
+    expect(page.locator('#field-surname')).to_have_value('Саврыкин')
+    print('PASS: search, selection, live editing')
+
+    page.locator('#file').set_input_files({'name': 'empty.csv', 'mimeType': 'text/csv', 'buffer': b''})
+    expect(page.locator('#feedback')).to_contain_text('Файл пуст')
+    expect(page.locator('#field-surname')).to_have_value('Саврыкин')
+    csv = 'Номер удостоверения;Фамилия;Имя;Отчество;Ступень\n123;"Иванова; Смирнова";Анна;"Первая\nВторая";V\n'
+    page.locator('#file').set_input_files({'name': 'people.csv', 'mimeType': 'text/csv', 'buffer': csv.encode()})
+    expect(page.locator('#names .name')).to_have_count(1)
+    expect(page.locator('#field-surname')).to_have_value('Иванова; Смирнова')
+    expect(page.locator('#feedback')).to_contain_text('Загружено участников: 1')
+    print('PASS: CSV import, quoted delimiters/newlines, empty-file recovery')
+
+    page.locator('#field-surname').fill('<img src=x onerror=alert(1)>')
+    expect(page.locator('#names img')).to_have_count(0)
+    expect(page.locator('#pageOperator img')).to_have_count(0)
+    page.locator('#tabAdmin').click()
+    expect(page.locator('#tabAdmin')).to_have_attribute('aria-pressed', 'true')
+    page.locator('#dx').fill('2.4')
+    page.locator('#profileName').fill('Тестовый принтер')
+    page.locator('#saveProfile').click()
+    expect(page.locator('#feedback')).to_contain_text('сохранён')
+    page.reload(wait_until='networkidle')
+    page.locator('#tabAdmin').click()
+    expect(page.locator('#dx')).to_have_value('2.4')
+    expect(page.locator('#profileName')).to_have_value('Тестовый принтер')
+    print('PASS: HTML escaping, calibration persistence')
+
+    page.locator('#tabWork').click()
+    page.evaluate('window.print = () => { window.printCalled = true; }')
+    page.locator('#printAll').click()
+    assert page.evaluate('window.printCalled')
+    expect(page.locator('#print-root .print-sheet')).to_have_count(3)
+    page.emulate_media(media='print')
+    expect(page.locator('#print-root')).to_be_visible()
+    expect(page.locator('main')).to_be_hidden()
+    assert abs(page.locator('.print-sheet').first.bounding_box()['width'] - 138 * 96 / 25.4) < 1
+    page.emulate_media(media='screen')
+    print('PASS: print content, physical dimensions, print-only visibility')
+
+    for width in [375, 768, 1024, 1440]:
+        page.set_viewport_size({'width': width, 'height': 1000})
+        for mode in ['tabWork', 'tabAdmin']:
+            page.locator('#' + mode).click()
+            page.wait_for_timeout(150)
+            assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), (width, mode, page.evaluate('({scroll:document.documentElement.scrollWidth,body:document.body.scrollWidth,client:innerWidth})'), page.evaluate('Array.from(document.querySelectorAll("body *")).filter(e=>e.scrollWidth>e.clientWidth+2).map(e=>[e.tagName,e.id,e.className,e.scrollWidth,e.clientWidth,e.textContent.slice(0,80)])'))
+            preview = page.locator('#page' if mode == 'tabAdmin' else '#pageOperator').bounding_box()
+            assert preview['x'] >= 0 and preview['x'] + preview['width'] <= width, (width, preview)
+    page.locator('#tabWork').click()
+    page.screenshot(path='/tmp/gto-desktop.png', full_page=True)
+    page.set_viewport_size({'width': 375, 'height': 900})
+    page.screenshot(path='/tmp/gto-mobile.png', full_page=True)
+    assert not errors, errors
+    print('PASS: responsive layouts at 375/768/1024/1440px, no JavaScript errors')
+    # Corrupt settings and blocked storage must not break initialization.
+    page.evaluate("localStorage.setItem('gto-print-config', JSON.stringify({fields:{surname:{x:'bad',size:-2}},offset:{dx:'bad'}}))")
+    page.reload(wait_until='networkidle')
+    expect(page.locator('#names .name')).to_have_count(3)
+    assert 'NaN' not in page.locator('#pageOperator').inner_html()
+    context = browser.new_context()
+    context.add_init_script("Object.defineProperty(window, 'localStorage', {get() {throw new Error('blocked')}})")
+    blocked = context.new_page()
+    blocked.goto('http://127.0.0.1:8950', wait_until='networkidle')
+    expect(blocked.locator('#names .name')).to_have_count(3)
+    blocked.locator('#tabAdmin').click()
+    blocked.locator('#saveProfile').click()
+    expect(blocked.locator('#feedback')).to_contain_text('не разрешает сохранение')
+    print('PASS: invalid settings and unavailable localStorage')
+    browser.close()
