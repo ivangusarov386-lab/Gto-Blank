@@ -70,7 +70,7 @@ with sync_playwright() as p:
  print('PASS: no default PII persistence, opt-in draft restoration, undo, full CSV export/import and deletion')
 
  page.evaluate('localStorage.setItem("gto-participant-draft",JSON.stringify({version:1,expiresAt:Date.now()-1,people:[{surname:"Просроченный"}]}))')
- page.reload(wait_until='networkidle');expect(page.locator('#field-surname')).to_have_value('Абакумова');assert page.evaluate('localStorage.getItem("gto-participant-draft")') is None
+ page.reload(wait_until='networkidle');expect(page.locator('#field-surname')).to_have_value('Миронова');assert page.evaluate('localStorage.getItem("gto-participant-draft")') is None
  page.locator('#tabAdmin').click();count=page.locator('#profileSelect option').count()
  page.locator('#importProfiles').set_input_files({'name':'invalid.json','mimeType':'application/json','buffer':b'{"version":1,"profiles":[{"name":"bad","fields":{},"offset":{}}]}'})
  expect(page.locator('#profileSelect option')).to_have_count(count);expect(page.locator('#feedback')).to_contain_text('Некорректная калибровка')

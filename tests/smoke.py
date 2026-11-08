@@ -16,15 +16,15 @@ with sync_playwright() as p:
     expect(page.locator('#preview-person')).to_contain_text('Петрова')
     page.locator('#search').fill('несуществующий участник')
     expect(page.locator('.empty-state')).to_be_visible()
-    page.locator('#search').fill('Саврыкин')
+    page.locator('#search').fill('Волков')
     expect(page.locator('#names .name')).to_have_count(1)
     page.locator('#names .name').click()
-    expect(page.locator('#field-surname')).to_have_value('Саврыкин')
+    expect(page.locator('#field-surname')).to_have_value('Волков')
     print('PASS: search, selection, live editing')
 
     page.locator('#file').set_input_files({'name': 'empty.csv', 'mimeType': 'text/csv', 'buffer': b''})
     expect(page.locator('#feedback')).to_contain_text('Файл пуст')
-    expect(page.locator('#field-surname')).to_have_value('Саврыкин')
+    expect(page.locator('#field-surname')).to_have_value('Волков')
     csv = 'Номер удостоверения;Фамилия;Имя;Отчество;Ступень\n123;"Иванова; Смирнова";Анна;"Первая\nВторая";V\n'
     page.locator('#file').set_input_files({'name': 'people.csv', 'mimeType': 'text/csv', 'buffer': csv.encode()})
     page.locator('#applyImport').click()
