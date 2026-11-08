@@ -57,7 +57,7 @@ with sync_playwright() as p:
     print('PASS: mobile illustration is visible without downloading Three.js')
 
     fallback = browser.new_context(viewport={'width':1440,'height':1000})
-    fallback.route('**/assets/hero-3d.js',lambda route:route.abort())
+    fallback.route('**/assets/hero-3d.js*',lambda route:route.abort())
     offline = fallback.new_page()
     offline.goto(URL,wait_until='networkidle')
     offline.wait_for_timeout(1000)

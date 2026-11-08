@@ -21,7 +21,7 @@ async function updateScene() {
   if (!desktop.matches || motion.matches || navigator.connection?.saveData)
     return;
   try {
-    const { mountScene } = await import("./hero-3d.js");
+    const { mountScene } = await import("./hero-3d.js?v=45c6e63d0649");
     if (current === generation) dispose = mountScene(host);
   } catch {
     /* The static product illustration remains visible. */

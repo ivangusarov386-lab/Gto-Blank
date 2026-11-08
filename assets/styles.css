@@ -1403,3 +1403,40 @@ body.admin-mode #feedback:not([hidden]) {
     display: none;
   }
 }
+/* Preprinted certificate references, excluded from the print root. */
+.order-suffix,
+.minister-label,
+.minister-name,
+.issued-suffix {
+  position: absolute;
+  font:
+    8px Georgia,
+    serif;
+  color: #8b826b;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.order-suffix {
+  left: 111mm;
+  top: 75mm;
+}
+.minister-label {
+  left: 78mm;
+  top: 82mm;
+}
+.minister-name {
+  left: 114mm;
+  top: 82mm;
+}
+.signature-rule {
+  position: absolute;
+  left: 99mm;
+  top: 84.5mm;
+  width: 13mm;
+  border-bottom: 1px solid #b8ad92;
+  pointer-events: none;
+}
+.issued-suffix {
+  left: 132mm;
+  top: 88mm;
+}
