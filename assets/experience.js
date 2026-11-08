@@ -3,6 +3,12 @@ const workTab = document.getElementById("tabWork");
 for (const link of document.querySelectorAll("[data-open-workspace]")) {
   link.addEventListener("click", () => {
     workTab.click();
+    document.body.classList.add("editor-mode");
+    history.replaceState(
+      null,
+      "",
+      `${location.pathname}?editor=1${link.getAttribute("href")}`,
+    );
     const target = document.querySelector(link.getAttribute("href"));
     requestAnimationFrame(() => {
       target?.focus({ preventScroll: true });

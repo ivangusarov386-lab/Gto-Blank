@@ -23,6 +23,7 @@ with sync_playwright() as p:
     expect(page.locator('#tabWork')).to_have_attribute('aria-pressed','true')
     expect(page.locator('#studio')).to_be_focused()
     expect(page.locator('#work-panel')).to_be_visible()
+    page.goto(URL,wait_until='networkidle')
     page.locator('.secondary-cta').click()
     expect(page.locator('#operator-preview')).to_be_focused()
     print('PASS: editor and example CTAs work from either mode')

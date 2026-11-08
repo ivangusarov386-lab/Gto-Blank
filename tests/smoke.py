@@ -27,6 +27,7 @@ with sync_playwright() as p:
     expect(page.locator('#field-surname')).to_have_value('Саврыкин')
     csv = 'Номер удостоверения;Фамилия;Имя;Отчество;Ступень\n123;"Иванова; Смирнова";Анна;"Первая\nВторая";V\n'
     page.locator('#file').set_input_files({'name': 'people.csv', 'mimeType': 'text/csv', 'buffer': csv.encode()})
+    page.locator('#applyImport').click()
     expect(page.locator('#names .name')).to_have_count(1)
     expect(page.locator('#field-surname')).to_have_value('Иванова; Смирнова')
     expect(page.locator('#feedback')).to_contain_text('Загружено участников: 1')
@@ -48,8 +49,9 @@ with sync_playwright() as p:
     print('PASS: HTML escaping, calibration persistence')
 
     page.locator('#tabWork').click()
-    page.evaluate('window.print = () => { window.printCalled = true; }')
+    page.evaluate('() => {window.printCalled=false;window.print = () => { window.printCalled = true; }}')
     page.locator('#printAll').click()
+    page.locator('#confirmPrint').click()
     assert page.evaluate('window.printCalled')
     expect(page.locator('#print-root .print-sheet')).to_have_count(3)
     page.emulate_media(media='print')

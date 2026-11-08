@@ -9,6 +9,7 @@ with sync_playwright() as p:
     page = browser.new_page(viewport={'width': 1440, 'height': 1000})
     errors = []
     page.on('pageerror', lambda e: errors.append(str(e)))
+    page.on('dialog', lambda dialog: dialog.accept())
     page.goto(URL, wait_until='networkidle')
     page.locator('#tabAdmin').click()
     page.locator('#dx').fill('2.4')

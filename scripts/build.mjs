@@ -12,6 +12,15 @@ await build({
   target: ["es2022"],
   legalComments: "eof",
 });
+await build({
+  entryPoints: ["src/excel.js"],
+  outfile: "assets/excel.js",
+  bundle: true,
+  minify: true,
+  format: "esm",
+  target: ["es2022"],
+  legalComments: "eof",
+});
 const digest = (data) =>
   createHash("sha256").update(data).digest("hex").slice(0, 12);
 const file = await readFile("assets/hero-3d.js");

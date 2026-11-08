@@ -8,6 +8,7 @@
       name="description"
       content="Подготовка и печать удостоверений ГТО: импорт участников из Excel и CSV, предпросмотр и точная настройка бланка."
     />
+    <meta id="excel-module" data-src="assets/excel.js?v=df6406f5510e" />
     <meta name="theme-color" content="#142f39" />
     <link
       rel="icon"
@@ -16,6 +17,7 @@
     />
     <link rel="stylesheet" href="assets/styles.css?v=3bee319a420b" />
     <link rel="stylesheet" href="assets/premium.css?v=b2ace6314c6b" />
+    <link rel="stylesheet" href="assets/workspace.css?v=251bb3d2bf37" />
   </head>
   <body>
     <header>
@@ -58,6 +60,7 @@
           <path d="M7 17 17 7M7 7h10v10" /></svg
       ></a>
     </header>
+    <a class="editor-home" href="./">← О сервисе</a>
     <a class="skip-link" href="#main">Перейти к содержимому</a>
     <main id="main">
       <section class="workspace-heading" aria-labelledby="hero-title">
@@ -249,7 +252,8 @@
               ><input id="file" type="file" accept=".xlsx,.xls,.csv"
             /></label>
             <div class="note">
-              Для загрузки Excel нужен интернет. CSV можно загрузить офлайн.
+              Excel и CSV обрабатываются локально. Список не отправляется на
+              сервер.
             </div>
           </div>
           <div class="row">
@@ -279,6 +283,23 @@
               autocomplete="off"
             />
           </div>
+          <div class="row data-actions">
+            <button id="exportPeople" class="secondary">
+              Скачать заполненный CSV</button
+            ><button id="undoPeople" class="secondary" disabled>
+              Отменить правку
+            </button>
+          </div>
+          <label class="check-label"
+            ><input id="keepDraft" type="checkbox" /> Разрешить локальный
+            черновик: восстановление в течение 24 часов</label
+          >
+          <p id="data-state" class="note" role="status">
+            Участники хранятся в памяти страницы. Скачайте CSV перед закрытием.
+          </p>
+          <button id="clearPeople" class="text-button" type="button">
+            Удалить список и локальный черновик
+          </button>
           <div class="names" id="names" aria-label="Участники"></div>
           <div class="status" id="status" aria-live="polite">
             Загружен демонстрационный пример
@@ -287,8 +308,17 @@
         <div class="divider"></div>
         <h2><span class="step-number">02</span> Данные удостоверения</h2>
         <div class="grid2" id="form"></div>
+        <p class="note">
+          Отчество необязательно. Даты: ДД.ММ.ГГГГ. Ступень: I–XVIII или 1–18.
+        </p>
         <div class="divider"></div>
         <h2><span class="step-number">03</span> Всё готово к печати</h2>
+        <div
+          id="validation"
+          class="validation-box"
+          role="status"
+          tabindex="-1"
+        ></div>
         <div class="grid2">
           <button id="printOne">Напечатать выбранное</button
           ><button id="printAll" class="secondary">Напечатать все</button>
@@ -390,9 +420,28 @@
           сохраняется в этом браузере. Перед печатью тиража проверьте один
           экземпляр на обычной бумаге.
         </div>
+        <div class="profile-tools">
+          <label for="profileSelect">Сохранённый принтер</label
+          ><select id="profileSelect"></select>
+          <p id="profile-state" class="note" role="status"></p>
+          <div class="row">
+            <button id="deleteProfile" class="secondary" disabled>
+              Удалить профиль
+            </button>
+            <button id="exportProfiles" class="secondary">
+              Скачать калибровку</button
+            ><label class="file-button"
+              >Загрузить калибровку<input
+                id="importProfiles"
+                type="file"
+                accept=".json"
+                aria-label="Загрузить калибровку из JSON"
+            /></label>
+          </div>
+        </div>
         <div class="row" style="margin-bottom: 14px">
           <div>
-            <label>Название профиля принтера</label
+            <label for="profileName">Название профиля принтера</label
             ><input
               id="profileName"
               placeholder="Например, Принтер в кабинете"
@@ -411,7 +460,48 @@
           На экране показан ориентировочный разворот. При печати выводится
           <b>только переменный текст</b>, без фона и линий.
         </p>
-        <div class="preview-wrap">
+        <div class="calibration-toolbar">
+          <div>
+            <label for="fieldSelect">Поле для настройки</label
+            ><select id="fieldSelect"></select>
+          </div>
+          <div>
+            <label for="selectedFont">Шрифт, пт</label
+            ><input
+              id="selectedFont"
+              type="number"
+              min="4"
+              max="72"
+              step="0.5"
+            />
+          </div>
+          <button id="fitField" class="secondary">Уместить текст</button
+          ><button id="zoomEditor" class="secondary" aria-pressed="false">
+            Увеличить макет
+          </button>
+        </div>
+        <div
+          class="nudge-toolbar"
+          aria-label="Точное перемещение выбранного поля"
+        >
+          <button data-nudge="-1,0" aria-label="Сдвинуть поле влево">←</button
+          ><button data-nudge="0,-1" aria-label="Сдвинуть поле вверх">↑</button
+          ><button data-nudge="0,1" aria-label="Сдвинуть поле вниз">↓</button
+          ><button data-nudge="1,0" aria-label="Сдвинуть поле вправо">→</button>
+          <div>
+            <label for="nudgeStep">Шаг, мм</label
+            ><select id="nudgeStep">
+              <option value="0.2">0,2</option>
+              <option value="1">1</option>
+            </select>
+          </div>
+          <button id="undoCalibration" class="secondary" disabled>
+            Отменить</button
+          ><button id="redoCalibration" class="secondary" disabled>
+            Повторить
+          </button>
+        </div>
+        <div class="preview-wrap" id="calibration-preview">
           <div class="page guides" id="page">
             <div class="booklabel">
               МИНИСТЕРСТВО СПОРТА<br />РОССИЙСКОЙ ФЕДЕРАЦИИ
@@ -489,11 +579,11 @@
         <h2>Смещение принтера</h2>
         <div class="grid2">
           <div>
-            <label>Сдвиг всех полей X (мм)</label
+            <label for="dx">Сдвиг всех полей X (мм)</label
             ><input id="dx" type="number" step="0.2" value="0" />
           </div>
           <div>
-            <label>Сдвиг всех полей Y (мм)</label
+            <label for="dy">Сдвиг всех полей Y (мм)</label
             ><input id="dy" type="number" step="0.2" value="0" />
           </div>
         </div>
@@ -507,8 +597,70 @@
       <span>ГТО<span class="brand-dot">.</span> мастерская печати</span
       ><span>Меньше рутины. Больше достижений.</span>
     </footer>
+    <dialog id="import-dialog" aria-labelledby="import-title">
+      <div class="dialog-heading">
+        <h2 id="import-title">Проверьте импорт</h2>
+        <button
+          id="cancelImport"
+          class="secondary"
+          aria-label="Отменить импорт"
+        >
+          Закрыть
+        </button>
+      </div>
+      <p id="import-file" class="note"></p>
+      <div class="grid2">
+        <div id="encoding-control">
+          <label for="importEncoding">Кодировка CSV</label
+          ><select id="importEncoding">
+            <option value="auto">Определить автоматически</option>
+            <option value="utf-8">UTF-8</option>
+            <option value="windows-1251">Windows-1251</option>
+          </select>
+        </div>
+        <div id="sheet-control" hidden>
+          <label for="importSheet">Лист Excel</label
+          ><select id="importSheet"></select>
+        </div>
+      </div>
+      <details class="mapping-details">
+        <summary>Сопоставление столбцов</summary>
+        <div id="columnMapping" class="grid2"></div>
+      </details>
+      <p class="note">
+        Если дата в одной колонке, выберите её. Иначе укажите отдельные день,
+        месяц и год.
+      </p>
+      <div id="import-report" role="status"></div>
+      <div
+        class="table-scroll"
+        tabindex="0"
+        role="region"
+        aria-label="Предпросмотр импортируемых строк"
+      >
+        <table id="import-table"></table>
+      </div>
+      <div class="dialog-actions">
+        <button id="applyImport">Заменить список участниками из файла</button>
+      </div>
+    </dialog>
+    <dialog id="print-review" aria-labelledby="print-review-title">
+      <h2 id="print-review-title">Проверка тиража перед печатью</h2>
+      <div id="print-review-body"></div>
+      <p class="note">
+        Печать: фактический размер 100%, без колонтитулов, бумага 138 × 99 мм.
+        Сначала проверьте один бланк.
+      </p>
+      <div class="dialog-actions">
+        <button id="cancelPrint" class="secondary">Вернуться к проверке</button
+        ><button id="confirmPrint">Печатать</button>
+      </div>
+    </dialog>
+    <div id="measure-root" aria-hidden="true"></div>
     <div id="print-root" style="display: none"></div>
-    <script src="assets/app.js?v=a5b196269843" defer></script>
-    <script type="module" src="assets/experience.js?v=96c6d1d67745"></script>
+    <script src="assets/data.js?v=c2028d4a67fd" defer></script>
+    <script src="assets/workspace.js?v=b153ba8098c2" defer></script>
+    <script src="assets/app.js?v=828baaecee2a" defer></script>
+    <script type="module" src="assets/experience.js?v=6eeaac402387"></script>
   </body>
 </html>

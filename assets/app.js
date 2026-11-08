@@ -67,8 +67,14 @@ for (const key of ["dx", "dy"]) {
   const value = saved?.offset?.[key];
   if (typeof value === "number" && Number.isFinite(value)) offset[key] = value;
 }
-const save = () =>
-  writeSetting("gto-print-config", JSON.stringify({ fields: cfg, offset }));
+const save = () => {
+  const result = writeSetting(
+    "gto-print-config",
+    JSON.stringify({ fields: cfg, offset }),
+  );
+  if (workspaceReady) calibrationSaved();
+  return result;
+};
 function sample() {
   people = [
     {
@@ -126,10 +132,10 @@ function renderNames() {
     ? matches
         .map(
           ({ p, i }) =>
-            `<button type="button" class="name ${i === selected ? "active" : ""}" data-index="${i}" aria-pressed="${i === selected}"><span class="name-avatar" aria-hidden="true">${esc((p.surname || "?")[0])}</span><span><strong>${esc([p.surname, p.first, p.middle].filter(Boolean).join(" ") || "Без имени")}</strong><small>Удостоверение ${esc(p.number || "без номера")}</small></span>${i === selected ? '<span class="selected-mark" aria-hidden="true">✓</span>' : ""}</button>`,
+            `<button type="button" class="name ${i === selected ? "active" : ""}" data-index="${i}" aria-pressed="${i === selected}"><span class="name-avatar" aria-hidden="true">${esc((p.surname || "?")[0])}</span><span><strong>${esc([p.surname, p.first, p.middle].filter(Boolean).join(" ") || "Без имени")}</strong><small>${p._row ? `Строка ${p._row} · ` : ""}Удостоверение ${esc(p.number || "без номера")}${workspaceReady && issuesByPerson[i]?.length ? " · Нужна проверка" : ""}</small></span>${i === selected ? '<span class="selected-mark" aria-hidden="true">✓</span>' : ""}</button>`,
         )
         .join("")
-    : '<p class="empty-state">Никого не нашли. Попробуйте другую фамилию или номер.</p>';
+    : `<p class="empty-state">${people.length ? "Никого не нашли. Попробуйте другую фамилию или номер." : "Список пуст. Загрузите таблицу участников или откройте пример."}</p>`;
   $("names")
     .querySelectorAll("[data-index]")
     .forEach(
@@ -141,7 +147,7 @@ function renderNames() {
         }),
     );
   $("status").textContent =
-    `Найдено: ${matches.length} из ${people.length} · Выбрана запись ${selected + 1}`;
+    `Найдено: ${matches.length} из ${people.length} · Выбрана запись ${people.length ? selected + 1 : "—"}`;
   $("printOne").disabled = !people[selected];
   $("printAll").disabled = !people.length;
   $("printAll").textContent = `Напечатать все (${people.length})`;
@@ -152,9 +158,12 @@ function render() {
   $("form").innerHTML = Object.entries(fields)
     .map(
       ([k, l]) =>
-        `<div><label for="field-${k}">${l}</label><input id="field-${k}" data-field="${k}" value="${esc(p[k])}" autocomplete="off"></div>`,
+        `<div><label for="field-${k}">${l}${k === "middle" ? "" : " *"}</label><input id="field-${k}" data-field="${k}" value="${esc(p[k])}" autocomplete="off" aria-describedby="error-${k}"${k === "middle" ? "" : ' aria-required="true"'}><span id="error-${k}" class="field-error"></span></div>`,
     )
     .join("");
+  $("form")
+    .querySelectorAll("input")
+    .forEach((el) => (el.onfocus = () => checkpointPeople()));
   $("form")
     .querySelectorAll("input")
     .forEach(
@@ -162,6 +171,7 @@ function render() {
         (el.oninput = () => {
           if (!people[selected]) return;
           people[selected][el.dataset.field] = el.value;
+          peopleChanged();
           renderNames();
           draw();
         }),
@@ -199,6 +209,10 @@ function draw() {
       markup(people[selected] || {}, false, id === "page"),
     );
   }
+  if (workspaceReady) {
+    updateValidation();
+    syncFieldTools();
+  }
 }
 function positions() {
   const root = $("positions");
@@ -214,6 +228,7 @@ function positions() {
         const n = Number(input.value);
         if (!Number.isFinite(n) || (input.dataset.prop === "size" && n <= 0))
           return;
+        if (input.dataset.prop === "size" && (n < 4 || n > 72)) return;
         cfg[input.dataset.key][input.dataset.prop] = n;
         save();
         draw();
@@ -224,7 +239,7 @@ function positions() {
 const editor = $("page");
 let drag = null;
 function moveField(key, x, y, element) {
-  const pixelsPerMm = editor.offsetWidth / 138;
+  const pixelsPerMm = parseFloat(getComputedStyle(editor).width) / 138;
   const maxX = Math.max(0, 138 - element.offsetWidth / pixelsPerMm);
   const maxY = Math.max(0, 99 - element.offsetHeight / pixelsPerMm);
   cfg[key].x =
@@ -252,6 +267,7 @@ editor.addEventListener("pointerdown", (event) => {
   const field = event.target.closest(".movable");
   if (!field || !event.isPrimary || event.button !== 0 || drag) return;
   event.preventDefault();
+  activeField = field.dataset.key;
   field.focus({ preventScroll: true });
   drag = {
     key: field.dataset.key,
@@ -317,6 +333,12 @@ editor.addEventListener("keydown", (event) => {
 $("guides").onchange = (e) =>
   $("page").classList.toggle("guides", e.target.checked);
 $("reset").onclick = () => {
+  if (
+    !confirm(
+      "Сбросить положение всех полей и смещение принтера? Действие можно отменить кнопкой «Отменить».",
+    )
+  )
+    return;
   cfg = structuredClone(defaults);
   offset = { dx: 0, dy: 0 };
   $("dx").value = $("dy").value = 0;
@@ -339,8 +361,10 @@ $("demo").onclick = () => {
     )
   )
     return;
+  checkpointPeople();
   $("search").value = "";
   sample();
+  peopleChanged();
   notify("Загружены 3 демонстрационные записи.");
 };
 function toCSV() {
@@ -368,183 +392,32 @@ function toCSV() {
   setTimeout(() => URL.revokeObjectURL(a.href), 500);
 }
 $("csv").onclick = toCSV;
-function val(row, names) {
-  const keys = Object.keys(row);
-  for (const wanted of names) {
-    const found = keys.find((k) =>
-      String(k).trim().toLowerCase().includes(wanted),
-    );
-    if (found !== undefined && row[found] !== undefined)
-      return String(row[found]).trim();
-  }
-  return "";
-}
-function dateParts(row, prefix) {
-  const day = val(row, [prefix + " день", prefix + " дн", prefix + " day"]),
-    month = val(row, [prefix + " месяц", prefix + " мес", prefix + " month"]),
-    year = val(row, [prefix + " год", prefix + " year"]);
-  if (!day && !month && !year)
-    return val(row, [prefix + " дата", "дата " + prefix]);
-  return [day, month, year]
-    .filter(Boolean)
-    .map((x, i) => (i < 2 ? x.padStart(2, "0") : x))
-    .join(".");
-}
-function parseRows(rows) {
-  const result = rows
-    .map((r) => ({
-      number: val(r, ["номер удостоверения", "удостоверен", "certificate"]),
-      surname: val(r, ["фамилия", "surname"]),
-      first: val(r, ["имя", "first"]),
-      middle: val(r, ["отчество", "middle"]),
-      level: val(r, ["ступень", "level"]),
-      orderDate: dateParts(r, "приказ"),
-      orderNumber: val(r, ["номер приказ", "приказ номер", "order number"]),
-      issued: dateParts(r, "выдача"),
-    }))
-    .filter((p) => p.surname || p.number);
-  if (!result.length)
-    throw Error(
-      "Не распознаны столбцы с данными. Проверьте заголовки таблицы.",
-    );
-  people = result;
-  selected = 0;
-  $("search").value = "";
-  render();
-}
-function parseDelimited(text) {
-  text = text.replace(/^\ufeff/, "");
-  if (!text.trim())
-    throw Error("Файл пуст. Добавьте заголовки и хотя бы одного участника.");
-  // Count separators outside quoted fields in the first record.
-  let quoted = false,
-    semicolons = 0,
-    commas = 0;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (c === '"') {
-      if (quoted && text[i + 1] === '"') i++;
-      else quoted = !quoted;
-    } else if (!quoted) {
-      if (c === "\n" || c === "\r") break;
-      if (c === ";") semicolons++;
-      if (c === ",") commas++;
-    }
-  }
-  const sep = semicolons >= commas ? ";" : ",";
-  let records = [],
-    row = [],
-    cell = "";
-  quoted = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (c === '"') {
-      if (quoted && text[i + 1] === '"') {
-        cell += '"';
-        i++;
-      } else quoted = !quoted;
-    } else if (c === sep && !quoted) {
-      row.push(cell);
-      cell = "";
-    } else if ((c === "\n" || c === "\r") && !quoted) {
-      row.push(cell);
-      if (row.some((v) => v.trim())) records.push(row);
-      row = [];
-      cell = "";
-      if (c === "\r" && text[i + 1] === "\n") i++;
-    } else cell += c;
-  }
-  if (quoted)
-    throw Error(
-      "В CSV не закрыты кавычки. Проверьте файл и повторите загрузку.",
-    );
-  row.push(cell);
-  if (row.some((v) => v.trim())) records.push(row);
-  const head = records.shift();
-  if (!head || !records.length)
-    throw Error("В таблице нет участников. Добавьте строки под заголовками.");
-  return records.map((values) =>
-    Object.fromEntries(head.map((key, i) => [key.trim(), values[i] || ""])),
-  );
-}
-function loadXlsx() {
-  return new Promise((resolve, reject) => {
-    if (window.XLSX) return resolve();
-    const s = document.createElement("script");
-    s.src = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
-    s.onload = resolve;
-    s.onerror = () =>
-      reject(
-        Error(
-          "Не удалось загрузить библиотеку Excel. Сохраните файл как CSV и повторите.",
-        ),
-      );
-    document.head.append(s);
-  });
-}
-$("file").onchange = async (e) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
-  if (!/\.(csv|xlsx|xls)$/i.test(file.name)) {
-    notify("Выберите таблицу в формате CSV, XLSX или XLS.", true);
-    e.target.value = "";
-    return;
-  }
-  if (file.size > 10 * 1024 * 1024) {
-    notify("Файл слишком большой. Максимальный размер — 10 МБ.", true);
-    e.target.value = "";
-    return;
-  }
-  $("file").disabled = true;
-  notify(`Загружаем ${file.name}…`);
-  try {
-    let rows;
-    if (/\.csv$/i.test(file.name)) rows = parseDelimited(await file.text());
-    else {
-      await loadXlsx();
-      const wb = XLSX.read(await file.arrayBuffer(), {
-        type: "array",
-        cellDates: false,
-      });
-      rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {
-        defval: "",
-        raw: false,
-      });
-    }
-    if (
-      people.length &&
-      !confirm(
-        "Заменить текущий список участниками из файла? Несохранённые изменения будут потеряны.",
-      )
-    ) {
-      notify("Загрузка отменена. Текущий список сохранён.");
-      return;
-    }
-    parseRows(rows);
-    notify(`Готово: ${file.name}. Загружено участников: ${people.length}.`);
-  } catch (err) {
-    notify(err.message || "Не удалось прочитать таблицу.", true);
-  } finally {
-    $("file").disabled = false;
-    $("file").value = "";
-  }
-};
+// Import, matching and decoding live in workspace.js; parsing rules in data.js.
+$("file").onchange = openImport;
 function doPrint(all) {
   if (!people.length) return;
-  const arr = all ? people : [people[selected]];
+  updateValidation();
+  if (all) return reviewPrint();
+  if (issuesByPerson[selected]?.length) {
+    notify(
+      "Печать остановлена: исправьте отмеченные поля выбранного участника.",
+      true,
+    );
+    $("validation").focus();
+    return;
+  }
+  performPrint([people[selected]]);
+}
+function performPrint(arr) {
   const root = $("print-root");
   root.innerHTML = arr
     .map((p) => `<section class="print-sheet">${markup(p, true)}</section>`)
     .join("");
-  root.style.display = "block";
   window.print();
-  setTimeout(() => {
-    root.style.display = "none";
-  }, 200);
 }
 $("printOne").onclick = () => doPrint(false);
 $("printAll").onclick = () => doPrint(true);
-window.onafterprint = () => ($("print-root").style.display = "none");
+window.onafterprint = () => $("print-root").replaceChildren();
 $("tabWork").onclick = () => {
   document.body.classList.remove("admin-mode");
   $("tabWork").classList.add("active");
@@ -559,12 +432,7 @@ $("tabAdmin").onclick = () => {
 $("dx").value = offset.dx;
 $("dy").value = offset.dy;
 $("profileName").value = readSetting("gto-profile-name") || "Основной принтер";
-$("saveProfile").onclick = () => {
-  const name = $("profileName").value.trim() || "Основной принтер";
-  $("profileName").value = name;
-  if (writeSetting("gto-profile-name", name) && save())
-    notify(`Профиль «${name}» сохранён в этом браузере.`);
-};
+$("saveProfile").onclick = savePrinterProfile;
 for (const id of ["tabWork", "tabAdmin"])
   $(id).addEventListener("click", () => {
     $("tabWork").setAttribute("aria-pressed", String(id === "tabWork"));
@@ -575,9 +443,17 @@ function fitPreviews() {
   document.querySelectorAll(".preview-wrap").forEach((wrap) => {
     if (!wrap.clientWidth) return;
     const page = wrap.querySelector(".page");
-    const scale = Math.min(1, (wrap.clientWidth - 32) / page.offsetWidth);
+    const zoomed = wrap.classList.contains("is-zoomed");
+    const scale = zoomed
+      ? 1.5
+      : Math.min(
+          1,
+          (wrap.clientWidth - 32) / parseFloat(getComputedStyle(page).width),
+        );
     page.style.transform = `scale(${scale})`;
-    wrap.style.height = `${page.offsetHeight * scale + 40}px`;
+    wrap.style.height = zoomed
+      ? "520px"
+      : `${parseFloat(getComputedStyle(page).height) * scale + 40}px`;
   });
 }
 new ResizeObserver(fitPreviews).observe(document.querySelector("main"));
@@ -585,4 +461,5 @@ $("tabAdmin").addEventListener("click", fitPreviews);
 $("tabWork").addEventListener("click", fitPreviews);
 positions();
 sample();
+initWorkspace();
 fitPreviews();
