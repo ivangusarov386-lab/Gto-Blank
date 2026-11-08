@@ -55,6 +55,7 @@ with sync_playwright() as p:
     page.emulate_media(media='print')
     expect(page.locator('#print-root')).to_be_visible()
     expect(page.locator('main')).to_be_hidden()
+    expect(page.locator('footer')).to_be_hidden()
     assert abs(page.locator('.print-sheet').first.bounding_box()['width'] - 138 * 96 / 25.4) < 1
     page.emulate_media(media='screen')
     print('PASS: print content, physical dimensions, print-only visibility')

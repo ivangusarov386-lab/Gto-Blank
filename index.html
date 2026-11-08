@@ -8,49 +8,186 @@
       name="description"
       content="Подготовка и печать удостоверений ГТО: импорт участников из Excel и CSV, предпросмотр и точная настройка бланка."
     />
-    <meta name="theme-color" content="#102c4d" />
+    <meta name="theme-color" content="#142f39" />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="assets/styles.css" />
   </head>
   <body>
     <header>
-      <span style="font-size: 32px">🏅</span>
-      <div>
-        <b>ГТО · Печать удостоверений</b>
-        <div><small>Участники и печать — в одном месте</small></div>
-      </div>
+      <a class="brand" href="./" aria-label="ГТО — главная"
+        ><span class="brand-mark"
+          ><svg
+            class="icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="9" r="6" />
+            <path d="m8 14-1 8 5-3 5 3-1-8" />
+            <path
+              d="m12 6 .9 1.8 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2L9.1 8.1l2-.3Z"
+            /></svg></span
+        ><span
+          ><b>ГТО<span class="brand-dot">.</span></b
+          ><small>мастерская печати</small></span
+        ></a
+      >
+      <span class="header-caption">Для тех, кто оформляет достижения</span>
+      <span class="local-badge"><span></span> Локальная работа</span>
     </header>
     <a class="skip-link" href="#main">Перейти к содержимому</a>
     <nav aria-label="Режим работы">
       <button id="tabWork" class="active" aria-pressed="true">
-        Печать удостоверений</button
-      ><button id="tabAdmin" aria-pressed="false">Настройка шаблона</button>
+        <svg
+          class="icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M6 9V3h12v6M6 17H3V9h18v8h-3M6 14h12v7H6Z" />
+          <path d="M17 11h1" />
+        </svg>
+        Печать удостоверений
+      </button>
+      <button id="tabAdmin" aria-pressed="false">
+        <svg
+          class="icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M4 7h5m4 0h7M4 17h9m4 0h3" />
+          <circle cx="11" cy="7" r="2" />
+          <circle cx="15" cy="17" r="2" />
+        </svg>
+        Настройка шаблона
+      </button>
     </nav>
     <main id="main">
       <div class="workspace-heading">
-        <div>
-          <span class="eyebrow">РАБОЧЕЕ ПРОСТРАНСТВО</span>
-          <h1>Удостоверения без лишних шагов</h1>
+        <div class="hero-copy">
+          <span class="eyebrow"><span></span> ТОЧНОСТЬ В КАЖДОЙ ДЕТАЛИ</span>
+          <h1>Большие достижения.<br /><em>Безупречное оформление.</em></h1>
           <p>
-            Загрузите список, проверьте данные и подготовьте бланки к печати.
+            От списка участников до готовых удостоверений.<br />Все инструменты
+            — в одном рабочем пространстве.
           </p>
+          <span class="privacy-badge"
+            ><svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="m12 3 8 3v6c0 5-8 9-8 9S4 17 4 12V6Z" />
+              <path d="m8 12 3 3 5-6" />
+            </svg>
+            Данные участников остаются в браузере</span
+          >
         </div>
-        <span class="privacy-badge">● Данные остаются в браузере</span>
+        <div class="hero-art" aria-hidden="true">
+          <div class="orbit orbit-one"></div>
+          <div class="orbit orbit-two"></div>
+          <div class="hero-medal">
+            <svg
+              class="medal-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="9" r="6" />
+              <path d="m8 14-1 8 5-3 5 3-1-8" />
+              <path
+                d="m12 6 .9 1.8 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2L9.1 8.1l2-.3Z"
+              /></svg
+            ><span>ГТО</span>
+          </div>
+          <span class="art-caption">ГОТОВ К ТРУДУ<br />И ОБОРОНЕ</span
+          ><span class="art-star star-one">✦</span
+          ><span class="art-star star-two">✦</span>
+        </div>
+      </div>
+      <div class="workflow" aria-label="Этапы подготовки">
+        <span><b>01</b> Загрузите участников</span><i></i
+        ><span><b>02</b> Проверьте данные</span><i></i
+        ><span><b>03</b> Печатайте на бланках</span>
       </div>
       <div id="feedback" role="status" aria-live="polite" hidden></div>
       <section class="panel" id="work-panel">
-        <h2>1. Данные участников</h2>
+        <h2><span class="step-number">01</span> Данные участников</h2>
         <div class="stack">
           <div>
-            <label for="file">Загрузить таблицу участников</label
-            ><input id="file" type="file" accept=".xlsx,.xls,.csv" />
+            <label class="upload-zone" for="file"
+              ><span class="upload-icon"
+                ><svg
+                  class="icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M12 16V3m-5 5 5-5 5 5M4 15v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5"
+                  /></svg></span
+              ><strong>Выберите таблицу участников</strong
+              ><span>Excel или CSV · до 10 МБ</span
+              ><span class="upload-action"
+                >Выбрать файл
+                <svg
+                  class="icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  aria-hidden="true"
+                >
+                  <path d="M7 17 17 7M7 7h10v10" /></svg></span
+              ><input id="file" type="file" accept=".xlsx,.xls,.csv"
+            /></label>
             <div class="note">
-              Excel читается через библиотеку SheetJS (при первом открытии нужен
-              интернет). CSV работает без интернета.
+              Для загрузки Excel нужен интернет. CSV можно загрузить офлайн.
             </div>
           </div>
           <div class="row">
             <button class="secondary" id="demo">Показать пример</button
-            ><button class="secondary" id="csv">Скачать CSV-шаблон</button>
+            ><button class="secondary" id="csv">
+              <svg
+                class="icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M12 3v13m-5-5 5 5 5-5M4 16v5h16v-5" />
+              </svg>
+              CSV-шаблон
+            </button>
           </div>
           <div>
             <label for="search">Поиск по имени или номеру</label
@@ -67,10 +204,10 @@
           </div>
         </div>
         <div class="divider"></div>
-        <h2>2. Редактирование записи</h2>
+        <h2><span class="step-number">02</span> Данные удостоверения</h2>
         <div class="grid2" id="form"></div>
         <div class="divider"></div>
-        <h2>3. Печать на готовых бланках</h2>
+        <h2><span class="step-number">03</span> Всё готово к печати</h2>
         <div class="grid2">
           <button id="printOne">Напечатать выбранное</button
           ><button id="printAll" class="secondary">Напечатать все</button>
@@ -84,7 +221,22 @@
 
       <section class="panel" id="operator-preview">
         <div class="preview-heading">
-          <h2>Предпросмотр удостоверения</h2>
+          <h2>
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            Предпросмотр
+          </h2>
           <span class="tag">138 × 99 мм</span>
         </div>
         <div id="preview-person" class="preview-person"></div>
@@ -138,6 +290,11 @@
               М.П. _______ г.
             </div>
           </div>
+        </div>
+        <div class="preview-footer">
+          <span class="ready-dot"></span
+          ><span>Только текст · без фона и линий</span
+          ><span>Масштаб печати 100%</span>
         </div>
         <div class="printhelp">
           Сначала распечатайте на обычной бумаге и проверьте совмещение с
@@ -274,6 +431,10 @@
         </p>
       </section>
     </main>
+    <footer>
+      <span>ГТО<span class="brand-dot">.</span> мастерская печати</span
+      ><span>Создано с вниманием к каждому достижению</span>
+    </footer>
     <div id="print-root" style="display: none"></div>
     <script src="assets/app.js" defer></script>
   </body>
