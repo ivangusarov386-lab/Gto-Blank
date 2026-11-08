@@ -531,6 +531,11 @@
     font-weight: 500;
     letter-spacing: -0.025em;
   }
+  /* Pointer navigation focuses the heading for announcement, without a control-like ring.
+     Keyboard and skip-link focus retain the browser's normal indication. */
+  #workspace-title[data-pointer-focus]:focus {
+    outline: none;
+  }
   .studio-heading p {
     color: var(--arena-muted);
     font-size: 0.8125rem;

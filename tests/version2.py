@@ -24,10 +24,16 @@ with sync_playwright() as p:
  print('PASS: original requested title retained; local Golos font, one bundled stylesheet and semantic search')
  page.locator('.primary-cta').click()
  expect(page.locator('#workspace-title')).to_be_focused();expect(page.locator('h1:visible')).to_have_count(1)
+ expect(page.locator('#workspace-title')).to_have_attribute('data-pointer-focus','')
+ expect(page.locator('#workspace-title')).to_have_css('outline-style','none')
  assert page.locator('#workspace-title').evaluate('(e)=>e.tagName')=='H1'
  assert 'Редактор' in page.title()
  page.locator('#tabAdmin').click();assert 'Калибровка' in page.title();page.locator('#tabWork').click()
  page.locator('.skip-link').focus();page.keyboard.press('Enter');expect(page.locator('#workspace-title')).to_be_focused()
+ assert page.locator('#workspace-title').get_attribute('data-pointer-focus') is None
+ page.keyboard.press('Tab');expect(page.locator('#tabWork')).to_be_focused()
+ assert page.locator('#tabWork').evaluate('(e)=>getComputedStyle(e).outlineStyle')!='none'
+ print('PASS: pointer focus has no heading ring; keyboard/skip-link focus and button indicators retained')
  print('PASS: one visible main heading, updated view titles and working keyboard skip link')
  page.locator('#printAll').click()
  expect(page.locator('#cancelPrint')).to_be_focused()

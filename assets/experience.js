@@ -24,7 +24,7 @@ syncViewHeading();
 for (const id of ["tabWork", "tabAdmin"])
   document.getElementById(id).addEventListener("click", syncViewHeading);
 for (const link of document.querySelectorAll("[data-open-workspace]")) {
-  link.addEventListener("click", () => {
+  link.addEventListener("click", (event) => {
     workTab.click();
     document.body.classList.add("editor-mode");
     generation++;
@@ -37,11 +37,19 @@ for (const link of document.querySelectorAll("[data-open-workspace]")) {
       `${location.pathname}?editor=1${link.getAttribute("href")}`,
     );
     const target = document.querySelector(link.getAttribute("href"));
+    if (target?.id === "workspace-title") {
+      target.toggleAttribute("data-pointer-focus", event.detail > 0);
+    }
     requestAnimationFrame(() => {
       target?.focus({ preventScroll: true });
     });
   });
 }
+document.querySelector(".skip-link").addEventListener("click", () => {
+  document
+    .getElementById("workspace-title")
+    .removeAttribute("data-pointer-focus");
+});
 const motion = matchMedia("(prefers-reduced-motion: reduce)");
 const desktop = matchMedia("(min-width: 801px)");
 const host = document.getElementById("hero-canvas");
