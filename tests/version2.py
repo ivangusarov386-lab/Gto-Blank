@@ -56,6 +56,13 @@ with sync_playwright() as p:
  page.evaluate('document.documentElement.style.fontSize=""')
  page.set_viewport_size({'width':375,'height':900});page.locator('#tabWork').click();page.screenshot(path=str(out/'editor-mobile.png'),full_page=True)
  page.goto('http://127.0.0.1:8950',wait_until='networkidle');page.evaluate('document.fonts.ready');page.screenshot(path=str(out/'mobile.png'),full_page=True)
+ for width in [320,375,667,768,1024,1440]:
+  page.set_viewport_size({'width':width,'height':900})
+  for size in [16,32]:
+   page.evaluate('(size)=>document.documentElement.style.fontSize=size+"px"',size)
+   assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),('landing',width,size)
+ page.evaluate('document.documentElement.style.fontSize=""')
+ print('PASS: new landing composition reflows at 320–1440px and 200% text, including landscape width')
  assert not errors,errors
  assert not failed,failed
  (out/'observations.json').write_text(json.dumps({'browser':b.version,'scrollBefore':scroll_before,'scrollAfter':scroll_after,'errors':errors,'failedResponses':failed,'textScale':'100% and 200%','viewports':[320,375,768,1024,1440]},ensure_ascii=False,indent=2))

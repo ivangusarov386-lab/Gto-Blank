@@ -9,13 +9,13 @@
       content="Подготовка и печать удостоверений ГТО: импорт участников из Excel и CSV, предпросмотр и точная настройка бланка."
     />
     <meta id="excel-module" data-src="assets/excel.js?v=df6406f5510e" />
-    <meta name="theme-color" content="#244b83" />
+    <meta name="theme-color" content="#153dcc" />
     <link
       rel="icon"
       href="assets/favicon.svg?v=eb7c215abafc"
       type="image/svg+xml"
     />
-    <link rel="stylesheet" href="assets/site-v2.css?v=8c0c24fb5e23" />
+    <link rel="stylesheet" href="assets/site-v2.css?v=261372966b20" />
     <link
       id="golos-preload"
       rel="preload"
@@ -46,7 +46,7 @@
             /></svg></span
         ><span
           ><b>ГТО<span class="brand-dot">.</span></b
-          ><small>мастерская печати</small></span
+          ><small>печатная студия</small></span
         ></a
       >
       <nav class="header-links" aria-label="О сервисе">
@@ -72,13 +72,12 @@
       <section class="workspace-heading" aria-labelledby="hero-title">
         <div class="hero-copy">
           <span class="eyebrow"
-            ><span></span> Для центров тестирования ГТО</span
+            ><span></span> От списка участников до готового удостоверения</span
           >
           <h1 id="hero-title" tabindex="-1">Сервис печати удостоверений ГТО</h1>
           <p>
-            Загрузите участников из таблицы, проверьте данные и напечатайте
-            удостоверения на готовых бланках. Настройки вашего принтера
-            сохранятся для следующего тиража.
+            Весь тираж — в одном рабочем пространстве. Загрузите таблицу,
+            совместите текст с бланком и отправьте удостоверения на печать.
           </p>
           <div class="hero-actions">
             <a class="primary-cta" href="#workspace-title" data-open-workspace
@@ -106,9 +105,21 @@
           </div>
         </div>
         <div class="hero-art" aria-hidden="true">
-          <span class="scene-label"><i></i> Бланк удостоверения ГТО</span>
+          <span class="scene-label">Предпросмотр вашего результата</span>
           <div class="scene-glow"></div>
           <div class="scene-grid"></div>
+          <div class="print-spec print-spec-left">
+            <span>Формат бланка</span><strong>138 × 99</strong
+            ><small>миллиметров</small>
+          </div>
+          <div class="print-spec print-spec-right">
+            <span>Точная настройка</span><strong>На своём месте</strong
+            ><small>Каждая строка. Каждое поле.</small>
+          </div>
+          <span class="registration registration-tl"></span
+          ><span class="registration registration-tr"></span>
+          <span class="registration registration-bl"></span
+          ><span class="registration registration-br"></span>
           <img
             class="scene-fallback"
             src="assets/hero-fallback.svg?v=5d6431748203"
@@ -144,16 +155,26 @@
               <path d="M12 16V3m-5 5 5-5 5 5M4 15v6h16v-6" /></svg
           ></span>
           <div>
-            <h2>Один список. Весь тираж.</h2>
+            <h2>Таблица становится тиражом.</h2>
             <p>
               Участники из Excel или CSV — <br />без повторного ввода вручную.
             </p>
           </div>
         </article>
         <article>
-          <span class="benefit-icon">⊹</span>
+          <span class="benefit-icon" aria-hidden="true"
+            ><svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <path d="M12 2v5m0 10v5M2 12h5m10 0h5" />
+              <rect x="7" y="7" width="10" height="10" rx="2" /></svg
+          ></span>
           <div>
-            <h2>Каждое поле на своём месте.</h2>
+            <h2>Совмещение под вашим контролем.</h2>
             <p>
               Двигайте текст прямо на бланке. <br />Точная калибровка под ваш
               принтер.
@@ -161,9 +182,19 @@
           </div>
         </article>
         <article>
-          <span class="benefit-icon">✓</span>
+          <span class="benefit-icon" aria-hidden="true"
+            ><svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6Z" />
+              <path d="m8 12 3 3 5-6" /></svg
+          ></span>
           <div>
-            <h2>Ваши данные — только у вас.</h2>
+            <h2>Участники остаются у вас.</h2>
             <p>
               Список обрабатывается в браузере. <br />Без загрузки участников на
               сервер.
@@ -609,7 +640,7 @@
       </section>
     </main>
     <footer>
-      <span>ГТО<span class="brand-dot">.</span> мастерская печати</span
+      <span>ГТО<span class="brand-dot">.</span> печатная студия</span
       ><span>Меньше рутины. Больше достижений.</span>
     </footer>
     <dialog id="import-dialog" aria-labelledby="import-title">

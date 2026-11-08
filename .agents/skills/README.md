@@ -24,3 +24,5 @@
 ECC — коллекция навыков. Здесь подключена подходящая проекту часть, а не глобальные хуки, агенты и настройки всего набора. В `frontend-design-direction` добавлен локальный `package.json` с `type: commonjs`, чтобы исходный проверяющий скрипт работал внутри ESM-проекта. Остальные исходные файлы скопированы без изменений.
 
 В `version2` применены `frontend-design` и `modern-web-guidance`. Последний ищет руководства командой `npx -y modern-web-guidance@latest`; это инструмент разработки, не зависимость страницы и не внешняя передача списков участников.
+
+`ui-ux-pro-max` подключён из [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/tree/4f2dbb67e64969a9a30ab00742f2d55d66ddec2b), вместе с локальными поисковыми скриптами, данными, справочниками и MIT-лицензией. Поиск: `python3 .agents/skills/ui-ux-pro-max/scripts/search.py "document productivity tool" --design-system`.

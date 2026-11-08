@@ -1,8 +1,9 @@
 /* Legacy contains the tested editor and physical paper rules. V2 owns the UI theme. */
-@layer legacy, v2;
+@layer legacy, v2, art;
 @import "../assets/styles.css" layer(legacy);
 @import "../assets/premium.css" layer(legacy);
 @import "../assets/workspace.css" layer(legacy);
+@import "./print-studio.css" layer(art);
 @font-face {
   font-family: "Golos";
   font-style: normal;
@@ -502,7 +503,7 @@
     background-repeat: no-repeat;
     background-position: 0.75rem center;
     padding-inline-start: 2.25rem;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2350705a' stroke-width='1.5'%3E%3Ccircle cx='7' cy='7' r='4.5'/%3E%3Cpath d='m10.5 10.5 4 4'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23536173' stroke-width='1.5'%3E%3Ccircle cx='7' cy='7' r='4.5'/%3E%3Cpath d='m10.5 10.5 4 4'/%3E%3C/svg%3E");
   }
   search {
     display: block;
