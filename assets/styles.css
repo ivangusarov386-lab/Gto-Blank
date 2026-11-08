@@ -799,3 +799,40 @@ body.admin-mode #admin-panel .preview-wrap {
   min-width: 0;
   overflow-wrap: anywhere;
 }
+
+#page .movable {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  min-width: 3mm;
+  min-height: 3mm;
+  z-index: 2;
+}
+#page .movable:hover,
+#page .movable:focus-visible {
+  outline: 1px solid #276797;
+  background: #fff6d9;
+  z-index: 3;
+}
+#page .movable.dragging {
+  cursor: grabbing;
+  outline: 1px solid #276797;
+  background: #fff0b9;
+  z-index: 4;
+}
+.fine-settings {
+  margin-top: 16px;
+  border: 1px solid #d9e1ea;
+  border-radius: 10px;
+  padding: 12px;
+}
+.fine-settings summary {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  color: #49617a;
+}
+.fine-settings summary:focus-visible {
+  outline: 3px solid #4288c9;
+  outline-offset: 3px;
+}

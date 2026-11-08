@@ -233,18 +233,29 @@
               style="width: auto"
             />Подсветить области текста</label
           ><button class="secondary" id="reset" style="flex: 0">
-            Сбросить координаты
+            Сбросить положение
           </button>
         </div>
-        <p class="note">
-          X и Y — положение левого верхнего угла поля в миллиметрах от левого
-          верхнего края всего разворота. Размер шрифта — в пунктах (pt).
+        <p class="note" id="drag-help">
+          Перетащите текст мышью или пальцем прямо на бланке. Для точной
+          подстройки выделите поле и используйте стрелки: шаг 0,2 мм, с Shift —
+          1 мм. Esc отменяет перетаскивание.
         </p>
-        <div class="controls" style="font-weight: 700; color: #51667a">
-          <span>Поле</span><span>X, мм</span><span>Y, мм</span
-          ><span>Шрифт</span>
+        <div id="drag-status" class="note" role="status" aria-live="polite">
+          Положение полей сохраняется автоматически в этом браузере.
         </div>
-        <div id="positions"></div>
+        <details class="fine-settings">
+          <summary>Точная настройка координат и шрифта</summary>
+          <p class="note">
+            X и Y отсчитываются в миллиметрах от левого верхнего края разворота.
+            Размер шрифта — в пунктах (pt).
+          </p>
+          <div class="controls" style="font-weight: 700; color: #51667a">
+            <span>Поле</span><span>X, мм</span><span>Y, мм</span
+            ><span>Шрифт</span>
+          </div>
+          <div id="positions"></div>
+        </details>
         <div class="divider"></div>
         <h2>Смещение принтера</h2>
         <div class="grid2">

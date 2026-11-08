@@ -168,13 +168,16 @@ function render() {
     );
   draw();
 }
-function markup(p, print = false) {
+function markup(p, print = false, editable = false) {
   return Object.keys(defaults)
     .map((k) => {
       const f = cfg[k],
         x = Number(f.x) + offset.dx,
         y = Number(f.y) + offset.dy;
-      return `<div class="field" style="left:${x}mm;top:${y}mm;font-size:${Number(f.size)}pt">${esc(p[k])}</div>`;
+      const controls = editable
+        ? ` data-key="${k}" tabindex="0" role="button" aria-label="Переместить: ${esc(f.label)}" aria-describedby="drag-help"`
+        : "";
+      return `<div class="field${editable ? " movable" : ""}"${controls} style="left:${x}mm;top:${y}mm;font-size:${Number(f.size)}pt">${esc(p[k] || (editable ? f.label : ""))}</div>`;
     })
     .join("");
 }
@@ -191,7 +194,10 @@ function draw() {
     const page = $(id);
     if (!page) continue;
     page.querySelectorAll(".field").forEach((x) => x.remove());
-    page.insertAdjacentHTML("beforeend", markup(people[selected] || {}));
+    page.insertAdjacentHTML(
+      "beforeend",
+      markup(people[selected] || {}, false, id === "page"),
+    );
   }
 }
 function positions() {
@@ -214,6 +220,100 @@ function positions() {
       }),
   );
 }
+// Pointer coordinates are screen pixels; the template and saved positions use mm.
+const editor = $("page");
+let drag = null;
+function moveField(key, x, y, element) {
+  const pixelsPerMm = editor.offsetWidth / 138;
+  const maxX = Math.max(0, 138 - element.offsetWidth / pixelsPerMm);
+  const maxY = Math.max(0, 99 - element.offsetHeight / pixelsPerMm);
+  cfg[key].x =
+    Math.round((Math.min(maxX, Math.max(0, x + offset.dx)) - offset.dx) * 10) /
+    10;
+  cfg[key].y =
+    Math.round((Math.min(maxY, Math.max(0, y + offset.dy)) - offset.dy) * 10) /
+    10;
+  element.style.left = `${cfg[key].x + offset.dx}mm`;
+  element.style.top = `${cfg[key].y + offset.dy}mm`;
+  for (const prop of ["x", "y"]) {
+    $("positions").querySelector(
+      `[data-key="${key}"][data-prop="${prop}"]`,
+    ).value = cfg[key][prop];
+  }
+}
+function finishMove(key) {
+  save();
+  draw();
+  editor.querySelector(`[data-key="${key}"]`)?.focus({ preventScroll: true });
+  $("drag-status").textContent =
+    `${cfg[key].label}: X ${cfg[key].x} мм, Y ${cfg[key].y} мм. Положение обновлено.`;
+}
+editor.addEventListener("pointerdown", (event) => {
+  const field = event.target.closest(".movable");
+  if (!field || !event.isPrimary || event.button !== 0 || drag) return;
+  event.preventDefault();
+  field.focus({ preventScroll: true });
+  drag = {
+    key: field.dataset.key,
+    field,
+    id: event.pointerId,
+    startX: event.clientX,
+    startY: event.clientY,
+    x: cfg[field.dataset.key].x,
+    y: cfg[field.dataset.key].y,
+    width: editor.getBoundingClientRect().width,
+    height: editor.getBoundingClientRect().height,
+  };
+  field.classList.add("dragging");
+  field.setPointerCapture(event.pointerId);
+});
+editor.addEventListener("pointermove", (event) => {
+  if (!drag || event.pointerId !== drag.id) return;
+  moveField(
+    drag.key,
+    drag.x + ((event.clientX - drag.startX) * 138) / drag.width,
+    drag.y + ((event.clientY - drag.startY) * 99) / drag.height,
+    drag.field,
+  );
+});
+function endDrag(event, cancelled = false) {
+  if (!drag || (event && event.pointerId !== drag.id)) return;
+  const current = drag;
+  drag = null;
+  if (current.field.hasPointerCapture(current.id))
+    current.field.releasePointerCapture(current.id);
+  if (cancelled) {
+    cfg[current.key].x = current.x;
+    cfg[current.key].y = current.y;
+    positions();
+  }
+  finishMove(current.key);
+  if (cancelled) $("drag-status").textContent = "Перемещение отменено.";
+}
+editor.addEventListener("pointerup", (event) => endDrag(event));
+editor.addEventListener("pointercancel", (event) => endDrag(event, true));
+editor.addEventListener("lostpointercapture", (event) => endDrag(event, true));
+editor.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && drag) {
+    event.preventDefault();
+    endDrag(null, true);
+    return;
+  }
+  const field = event.target.closest(".movable");
+  const directions = {
+    ArrowLeft: [-1, 0],
+    ArrowRight: [1, 0],
+    ArrowUp: [0, -1],
+    ArrowDown: [0, 1],
+  };
+  if (!field || !directions[event.key] || drag) return;
+  event.preventDefault();
+  const [dx, dy] = directions[event.key],
+    step = event.shiftKey ? 1 : 0.2;
+  const key = field.dataset.key;
+  moveField(key, cfg[key].x + dx * step, cfg[key].y + dy * step, field);
+  finishMove(key);
+});
 $("guides").onchange = (e) =>
   $("page").classList.toggle("guides", e.target.checked);
 $("reset").onclick = () => {
