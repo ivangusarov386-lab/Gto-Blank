@@ -11,6 +11,9 @@ with sync_playwright() as p:
  page.on('response',lambda r:failed.append([r.status,r.url]) if r.status>=400 else None)
  page.goto('http://127.0.0.1:8950',wait_until='networkidle');page.evaluate('document.fonts.ready')
  assert page.evaluate('document.fonts.check("16px Golos", "Сервис")')
+ assert page.evaluate('document.fonts.check("32px Arena", "Удостоверение")')
+ assert page.locator('#arena-display-preload').get_attribute('href').endswith('.woff2')
+ assert page.locator('#arena-display-preload').get_attribute('crossorigin') is not None
  assert page.locator('link[rel=stylesheet]').count()==1
  assert page.locator('#golos-preload').get_attribute('crossorigin') is not None
  assert page.locator('#golos-preload').get_attribute('href').endswith('.woff2')
@@ -61,6 +64,8 @@ with sync_playwright() as p:
   for size in [16,32]:
    page.evaluate('(size)=>document.documentElement.style.fontSize=size+"px"',size)
    assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),('landing',width,size)
+   assert page.locator('#hero-title').evaluate('(e)=>e.scrollWidth<=e.clientWidth+1'),('clipped heading',width,size)
+   assert page.locator('.arena-specs').evaluate('(e)=>[...e.querySelectorAll("dd")].every(d=>d.getBoundingClientRect().right<=e.getBoundingClientRect().right+1)'),('clipped specifications',width,size)
  page.evaluate('document.documentElement.style.fontSize=""')
  print('PASS: new landing composition reflows at 320–1440px and 200% text, including landscape width')
  assert not errors,errors

@@ -76,3 +76,7 @@ python3 tests/version2.py
 [Навыки проекта](.agents/skills/README.md) · [Визуальная система](docs/design.md) · [Исходный аудит ECC](docs/ecc-site-audit.md) · [Результат исправлений](docs/ecc-improvements.md)
 
 Изменения по новым навыкам, палитра и ограничения совместимости: [docs/version2-design.md](docs/version2-design.md).
+
+## Version3: спортивный hi-tech
+
+Текущий дизайн «ГТО / Арена»: [концепция и токены](design-system/gto-arena/MASTER.md), исходник `src/arena.css`. Шрифты Golos и Oswald локальные; сборка обновляет хеши CSS, SVG и предзагрузок. Изменения интерфейса ограничены экраном; печатный шаблон остаётся 138 × 99 мм.

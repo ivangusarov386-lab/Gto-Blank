@@ -9,13 +9,13 @@
       content="Подготовка и печать удостоверений ГТО: импорт участников из Excel и CSV, предпросмотр и точная настройка бланка."
     />
     <meta id="excel-module" data-src="assets/excel.js?v=df6406f5510e" />
-    <meta name="theme-color" content="#153dcc" />
+    <meta name="theme-color" content="#0b1222" />
     <link
       rel="icon"
-      href="assets/favicon.svg?v=eb7c215abafc"
+      href="assets/favicon.svg?v=312a12cb901c"
       type="image/svg+xml"
     />
-    <link rel="stylesheet" href="assets/site-v2.css?v=261372966b20" />
+    <link rel="stylesheet" href="assets/site-v2.css?v=24614fe9a26a" />
     <link
       id="golos-preload"
       rel="preload"
@@ -23,6 +23,14 @@
       type="font/woff2"
       crossorigin
       href="assets/fonts/golos-text-cyrillic-wght-normal-IG2DBSLC.woff2"
+    />
+    <link
+      id="arena-display-preload"
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      crossorigin
+      href="assets/fonts/oswald-cyrillic-wght-normal-KT3NR3TZ.woff2"
     />
   </head>
   <body>
@@ -46,7 +54,7 @@
             /></svg></span
         ><span
           ><b>ГТО<span class="brand-dot">.</span></b
-          ><small>печатная студия</small></span
+          ><small>технология достижений</small></span
         ></a
       >
       <nav class="header-links" aria-label="О сервисе">
@@ -72,12 +80,12 @@
       <section class="workspace-heading" aria-labelledby="hero-title">
         <div class="hero-copy">
           <span class="eyebrow"
-            ><span></span> От списка участников до готового удостоверения</span
+            ><span></span> Для тех, кто готовит награды</span
           >
           <h1 id="hero-title" tabindex="-1">Сервис печати удостоверений ГТО</h1>
           <p>
-            Весь тираж — в одном рабочем пространстве. Загрузите таблицу,
-            совместите текст с бланком и отправьте удостоверения на печать.
+            За каждым знаком — результат. Подготовьте удостоверения для всей
+            команды: от таблицы участников до точной печати на бланке.
           </p>
           <div class="hero-actions">
             <a class="primary-cta" href="#workspace-title" data-open-workspace
@@ -105,17 +113,17 @@
           </div>
         </div>
         <div class="hero-art" aria-hidden="true">
-          <span class="scene-label">Предпросмотр вашего результата</span>
+          <span class="scene-label">Знак отличия. Точный результат.</span>
           <div class="scene-glow"></div>
           <div class="scene-grid"></div>
-          <div class="print-spec print-spec-left">
-            <span>Формат бланка</span><strong>138 × 99</strong
-            ><small>миллиметров</small>
-          </div>
-          <div class="print-spec print-spec-right">
-            <span>Точная настройка</span><strong>На своём месте</strong
-            ><small>Каждая строка. Каждое поле.</small>
-          </div>
+          <span class="arena-watermark">ГТО</span>
+          <img
+            class="arena-track"
+            src="assets/arena-track.svg?v=35e781ef7308"
+            width="800"
+            height="700"
+            alt=""
+          />
           <span class="registration registration-tl"></span
           ><span class="registration registration-tr"></span>
           <span class="registration registration-bl"></span
@@ -132,7 +140,7 @@
           <div class="scene-note">
             <span class="scene-check">✓</span
             ><span
-              ><strong>Только нужный текст</strong
+              ><strong>Точность в каждой строке</strong
               ><small>Без печати фона и линий</small></span
             >
           </div>
@@ -140,6 +148,20 @@
             >138 × 99 мм <span>·</span> Печать на готовом бланке</span
           >
         </div>
+        <dl class="arena-specs">
+          <div>
+            <dt>Импорт участников</dt>
+            <dd>Excel / CSV</dd>
+          </div>
+          <div>
+            <dt>Формат бланка</dt>
+            <dd>138 × 99 <span>мм</span></dd>
+          </div>
+          <div>
+            <dt>Масштаб печати</dt>
+            <dd>100<span>%</span></dd>
+          </div>
+        </dl>
       </section>
       <section id="benefits" class="benefits" aria-label="Возможности сервиса">
         <article>
@@ -155,7 +177,7 @@
               <path d="M12 16V3m-5 5 5-5 5 5M4 15v6h16v-6" /></svg
           ></span>
           <div>
-            <h2>Таблица становится тиражом.</h2>
+            <h2>Вся команда. Один тираж.</h2>
             <p>
               Участники из Excel или CSV — <br />без повторного ввода вручную.
             </p>
@@ -174,7 +196,7 @@
               <rect x="7" y="7" width="10" height="10" rx="2" /></svg
           ></span>
           <div>
-            <h2>Совмещение под вашим контролем.</h2>
+            <h2>Точность решает.</h2>
             <p>
               Двигайте текст прямо на бланке. <br />Точная калибровка под ваш
               принтер.
@@ -194,7 +216,7 @@
               <path d="m8 12 3 3 5-6" /></svg
           ></span>
           <div>
-            <h2>Участники остаются у вас.</h2>
+            <h2>Данные под защитой.</h2>
             <p>
               Список обрабатывается в браузере. <br />Без загрузки участников на
               сервер.
@@ -640,7 +662,7 @@
       </section>
     </main>
     <footer>
-      <span>ГТО<span class="brand-dot">.</span> печатная студия</span
+      <span>ГТО<span class="brand-dot">.</span> технология достижений</span
       ><span>Меньше рутины. Больше достижений.</span>
     </footer>
     <dialog id="import-dialog" aria-labelledby="import-title">

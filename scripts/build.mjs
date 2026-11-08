@@ -47,10 +47,19 @@ const cyrillicFont = Object.keys(styleBuild.metafile.outputs).find(
     path.includes("golos-text-cyrillic-wght") && path.endsWith(".woff2"),
 );
 if (!cyrillicFont) throw Error("Critical Cyrillic font was not emitted");
+const displayFont = Object.keys(styleBuild.metafile.outputs).find(
+  (path) => path.includes("oswald-cyrillic-wght") && path.endsWith(".woff2"),
+);
+if (!displayFont) throw Error("Cyrillic display font was not emitted");
 let html = await readFile("index.html", "utf8");
 html = html.replace(
   /(<link\b(?=[^>]*\bid="golos-preload")[^>]*\bhref=")[^"]+("[^>]*>)/s,
   `$1${cyrillicFont}$2`,
+);
+
+html = html.replace(
+  /(<link\b(?=[^>]*\bid="arena-display-preload")[^>]*\bhref=")[^"]+("[^>]*>)/s,
+  `$1${displayFont}$2`,
 );
 
 const assets = [

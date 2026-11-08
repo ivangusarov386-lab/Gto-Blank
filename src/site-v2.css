@@ -3,7 +3,7 @@
 @import "../assets/styles.css" layer(legacy);
 @import "../assets/premium.css" layer(legacy);
 @import "../assets/workspace.css" layer(legacy);
-@import "./print-studio.css" layer(art);
+@import "./arena.css" layer(art);
 @font-face {
   font-family: "Golos";
   font-style: normal;
