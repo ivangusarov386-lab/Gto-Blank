@@ -964,12 +964,55 @@ body.admin-mode #feedback:not([hidden]) {
 }
 .otherlabel {
   position: absolute;
-  top: 54mm;
-  left: 87mm;
+  top: 49.9mm;
+  left: 78mm;
+  width: 55mm;
+  text-align: center;
+  font:
+    bold 8px/1.05 Georgia,
+    serif;
+  color: #8b826b;
+  pointer-events: none;
+}
+.otherlabel span {
+  display: block;
+  white-space: nowrap;
+}
+.step-label {
+  position: absolute;
+  left: 99mm;
+  top: 64.9mm;
   font:
     bold 9px Georgia,
     serif;
-  color: #4e6372;
+  color: #8b826b;
+  pointer-events: none;
+}
+.step-rule {
+  position: absolute;
+  left: 89mm;
+  top: 67.8mm;
+  width: 9mm;
+  border-bottom: 1px solid #b8ad92;
+  pointer-events: none;
+}
+.seal-label {
+  position: absolute;
+  left: 84mm;
+  top: 87mm;
+  font:
+    9px Georgia,
+    serif;
+  color: #8b826b;
+  pointer-events: none;
+}
+.issued-rule {
+  position: absolute;
+  left: 107mm;
+  top: 90.5mm;
+  width: 24mm;
+  border-bottom: 1px solid #b8ad92;
+  pointer-events: none;
 }
 #page .movable {
   cursor: grab;
