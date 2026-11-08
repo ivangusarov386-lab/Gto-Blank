@@ -45,13 +45,42 @@ for (const link of document.querySelectorAll("[data-open-workspace]")) {
 const motion = matchMedia("(prefers-reduced-motion: reduce)");
 const desktop = matchMedia("(min-width: 801px)");
 const host = document.getElementById("hero-canvas");
+const sceneControl = document.getElementById("scene-motion");
+let scenePaused = false;
+let sceneAvailable = false;
+function syncSceneControl() {
+  sceneControl.hidden =
+    !sceneAvailable ||
+    !desktop.matches ||
+    motion.matches ||
+    document.body.classList.contains("editor-mode") ||
+    navigator.connection?.saveData;
+  sceneControl.setAttribute("aria-pressed", String(!scenePaused));
+  sceneControl.textContent = scenePaused ? "Включить 3D" : "Остановить 3D";
+}
+sceneControl.addEventListener("click", () => {
+  scenePaused = !scenePaused;
+  updateScene();
+});
+// An isolated illustration: it never reads or changes participants or printer offsets.
+const alignmentToggle = document.getElementById("alignment-toggle");
+const alignmentDemo = document.getElementById("alignment-demo");
+alignmentDemo.classList.remove("is-aligned");
+alignmentToggle.hidden = false;
+alignmentToggle.addEventListener("click", () => {
+  const aligned = alignmentDemo.classList.toggle("is-aligned");
+  alignmentToggle.setAttribute("aria-pressed", String(aligned));
+});
+
 let dispose = null,
   generation = 0;
 async function updateScene() {
   const current = ++generation;
   dispose?.();
   dispose = null;
+  syncSceneControl();
   if (
+    scenePaused ||
     document.body.classList.contains("editor-mode") ||
     !desktop.matches ||
     motion.matches ||
@@ -60,8 +89,20 @@ async function updateScene() {
     return;
   try {
     const { mountScene } = await import("./hero-3d.js?v=9d042f66d727");
-    if (current === generation && host.getBoundingClientRect().width > 0)
+    if (current === generation && host.getBoundingClientRect().width > 0) {
       dispose = mountScene(host);
+      const canvas = host.querySelector("canvas");
+      sceneAvailable = Boolean(canvas);
+      canvas?.addEventListener(
+        "webglcontextlost",
+        () => {
+          sceneAvailable = false;
+          syncSceneControl();
+        },
+        { once: true },
+      );
+      syncSceneControl();
+    }
   } catch {
     /* The static product illustration remains visible. */
   }
