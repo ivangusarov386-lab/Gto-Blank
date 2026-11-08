@@ -11,6 +11,7 @@
     <meta name="theme-color" content="#142f39" />
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="assets/styles.css" />
+    <link rel="stylesheet" href="assets/premium.css" />
   </head>
   <body>
     <header>
@@ -36,98 +37,174 @@
           ><small>мастерская печати</small></span
         ></a
       >
-      <span class="header-caption">Для тех, кто оформляет достижения</span>
-      <span class="local-badge"><span></span> Локальная работа</span>
+      <div class="header-links">
+        <a href="#benefits">Возможности</a
+        ><a href="#workflow">Как это работает</a>
+      </div>
+      <a class="header-cta" href="#studio" data-open-workspace
+        >Открыть редактор
+        <svg
+          class="icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          aria-hidden="true"
+        >
+          <path d="M7 17 17 7M7 7h10v10" /></svg
+      ></a>
     </header>
     <a class="skip-link" href="#main">Перейти к содержимому</a>
-    <nav aria-label="Режим работы">
-      <button id="tabWork" class="active" aria-pressed="true">
-        <svg
-          class="icon"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.6"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M6 9V3h12v6M6 17H3V9h18v8h-3M6 14h12v7H6Z" />
-          <path d="M17 11h1" />
-        </svg>
-        Печать удостоверений
-      </button>
-      <button id="tabAdmin" aria-pressed="false">
-        <svg
-          class="icon"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.6"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M4 7h5m4 0h7M4 17h9m4 0h3" />
-          <circle cx="11" cy="7" r="2" />
-          <circle cx="15" cy="17" r="2" />
-        </svg>
-        Настройка шаблона
-      </button>
-    </nav>
     <main id="main">
-      <div class="workspace-heading">
+      <section class="workspace-heading" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <span class="eyebrow"><span></span> ТОЧНОСТЬ В КАЖДОЙ ДЕТАЛИ</span>
-          <h1>Большие достижения.<br /><em>Безупречное оформление.</em></h1>
+          <span class="eyebrow"
+            ><span></span> ДЛЯ ЦЕНТРОВ ТЕСТИРОВАНИЯ ГТО</span
+          >
+          <h1 id="hero-title">
+            Меньше рутины.<br />Больше <em>поводов<br />для гордости.</em>
+          </h1>
           <p>
-            От списка участников до готовых удостоверений.<br />Все инструменты
-            — в одном рабочем пространстве.
+            Оформляйте удостоверения так же точно,<br class="desktop-break" />
+            как фиксируете достижения. Загрузите список —<br
+              class="desktop-break"
+            />
+            и подготовьте весь тираж к печати.
           </p>
-          <span class="privacy-badge"
+          <div class="hero-actions">
+            <a class="primary-cta" href="#studio" data-open-workspace
+              >Подготовить удостоверения
+              <svg
+                class="icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                aria-hidden="true"
+              >
+                <path d="M7 17 17 7M7 7h10v10" /></svg></a
+            ><a
+              class="secondary-cta"
+              href="#operator-preview"
+              data-open-workspace
+              ><span class="play-icon" aria-hidden="true">▷</span> Посмотреть
+              пример</a
+            >
+          </div>
+          <div class="hero-assurances">
+            <span><b aria-hidden="true">✓</b> Без регистрации</span
+            ><span><b aria-hidden="true">✓</b> Данные в вашем браузере</span>
+          </div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <span class="scene-label"><i></i> КАЖДОЕ ДОСТИЖЕНИЕ ВАЖНО</span>
+          <div class="scene-glow"></div>
+          <div class="scene-grid"></div>
+          <img
+            class="scene-fallback"
+            src="assets/hero-fallback.svg"
+            width="600"
+            height="530"
+            alt=""
+            fetchpriority="high"
+          />
+          <div id="hero-canvas"></div>
+          <div class="scene-note">
+            <span class="scene-check">✓</span
+            ><span
+              ><strong>Готово к награждению</strong
+              ><small>Точность, достойная ваших результатов</small></span
+            >
+          </div>
+          <span class="scene-dimension"
+            >138 × 99 мм <span>·</span> ВАШ БЛАНК, ВАШ СТАНДАРТ</span
+          >
+        </div>
+      </section>
+      <section id="benefits" class="benefits" aria-label="Возможности сервиса">
+        <article>
+          <span class="benefit-icon"
             ><svg
               class="icon"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              stroke-width="1.6"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              stroke-width="1.5"
               aria-hidden="true"
             >
-              <path d="m12 3 8 3v6c0 5-8 9-8 9S4 17 4 12V6Z" />
-              <path d="m8 12 3 3 5-6" />
-            </svg>
-            Данные участников остаются в браузере</span
-          >
-        </div>
-        <div class="hero-art" aria-hidden="true">
-          <div class="orbit orbit-one"></div>
-          <div class="orbit orbit-two"></div>
-          <div class="hero-medal">
-            <svg
-              class="medal-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.6"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <circle cx="12" cy="9" r="6" />
-              <path d="m8 14-1 8 5-3 5 3-1-8" />
-              <path
-                d="m12 6 .9 1.8 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2L9.1 8.1l2-.3Z"
-              /></svg
-            ><span>ГТО</span>
+              <path d="M12 16V3m-5 5 5-5 5 5M4 15v6h16v-6" /></svg
+          ></span>
+          <div>
+            <h2>Один список. Весь тираж.</h2>
+            <p>
+              Участники из Excel или CSV — <br />без повторного ввода вручную.
+            </p>
           </div>
-          <span class="art-caption">ГОТОВ К ТРУДУ<br />И ОБОРОНЕ</span
-          ><span class="art-star star-one">✦</span
-          ><span class="art-star star-two">✦</span>
+        </article>
+        <article>
+          <span class="benefit-icon">⊹</span>
+          <div>
+            <h2>Каждое поле на своём месте.</h2>
+            <p>
+              Двигайте текст прямо на бланке. <br />Точная калибровка под ваш
+              принтер.
+            </p>
+          </div>
+        </article>
+        <article>
+          <span class="benefit-icon">✓</span>
+          <div>
+            <h2>Ваши данные — только у вас.</h2>
+            <p>
+              Список обрабатывается в браузере. <br />Без загрузки участников на
+              сервер.
+            </p>
+          </div>
+        </article>
+      </section>
+      <div class="studio-heading" id="studio" tabindex="-1">
+        <div>
+          <span class="eyebrow">ОТ СПИСКА К РЕЗУЛЬТАТУ</span>
+          <h2>Всё готово. Осталось ваше имя.</h2>
         </div>
+        <p>Попробуйте на примере<br />или загрузите свою таблицу.</p>
       </div>
-      <div class="workflow" aria-label="Этапы подготовки">
+      <nav aria-label="Режим работы">
+        <button id="tabWork" class="active" aria-pressed="true">
+          <svg
+            class="icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M6 9V3h12v6M6 17H3V9h18v8h-3M6 14h12v7H6Z" />
+            <path d="M17 11h1" />
+          </svg>
+          Печать удостоверений
+        </button>
+        <button id="tabAdmin" aria-pressed="false">
+          <svg
+            class="icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M4 7h5m4 0h7M4 17h9m4 0h3" />
+            <circle cx="11" cy="7" r="2" />
+            <circle cx="15" cy="17" r="2" />
+          </svg>
+          Настройка шаблона
+        </button>
+      </nav>
+      <div class="workflow" id="workflow" aria-label="Этапы подготовки">
         <span><b>01</b> Загрузите участников</span><i></i
         ><span><b>02</b> Проверьте данные</span><i></i
         ><span><b>03</b> Печатайте на бланках</span>
@@ -219,7 +296,7 @@
         </div>
       </section>
 
-      <section class="panel" id="operator-preview">
+      <section class="panel" id="operator-preview" tabindex="-1">
         <div class="preview-heading">
           <h2>
             <svg
@@ -433,9 +510,10 @@
     </main>
     <footer>
       <span>ГТО<span class="brand-dot">.</span> мастерская печати</span
-      ><span>Создано с вниманием к каждому достижению</span>
+      ><span>Меньше рутины. Больше достижений.</span>
     </footer>
     <div id="print-root" style="display: none"></div>
     <script src="assets/app.js" defer></script>
+    <script type="module" src="assets/experience.js"></script>
   </body>
 </html>
