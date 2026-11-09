@@ -9,6 +9,7 @@ const goldDefaults = {
   issued: { label: "Дата выдачи", x: 108, y: 87, size: 9 },
 };
 const PAPER = GTO.paper;
+const DEFAULT_AUTHORITY = "Департамент спорта города Москвы";
 const blankTypes = {
   gold: { label: "Золотой", award: "ЗОЛОТЫМ" },
   silver: { label: "Серебряный", award: "СЕРЕБРЯНЫМ" },
@@ -39,6 +40,17 @@ function defaultFields(type) {
       signerName: { label: "ФИО подписанта", x: 114, y: 80.2, size: 7 },
     });
   return result;
+}
+function fillBlankAuthority() {
+  if (blankType === "gold") return;
+  for (const person of people) {
+    if (
+      !String(person.authority || "").trim() ||
+      person.authority === "Учебный отдел спорта"
+    ) {
+      person.authority = DEFAULT_AUTHORITY;
+    }
+  }
 }
 function formLabels() {
   return Object.fromEntries(
@@ -149,7 +161,7 @@ function sample() {
       orderDate: "12.03.2026",
       orderNumber: "001 ПР",
       issued: "20.03.2026",
-      authority: "Учебный отдел спорта",
+      authority: DEFAULT_AUTHORITY,
       signerPosition: "Руководитель",
       signerName: "Примеров И. И.",
     },
@@ -162,7 +174,7 @@ function sample() {
       orderDate: "12.03.2026",
       orderNumber: "001 ПР",
       issued: "20.03.2026",
-      authority: "Учебный отдел спорта",
+      authority: DEFAULT_AUTHORITY,
       signerPosition: "Руководитель",
       signerName: "Примеров И. И.",
     },
@@ -175,7 +187,7 @@ function sample() {
       orderDate: "12.03.2026",
       orderNumber: "001 ПР",
       issued: "20.03.2026",
-      authority: "Учебный отдел спорта",
+      authority: DEFAULT_AUTHORITY,
       signerPosition: "Руководитель",
       signerName: "Примеров И. И.",
     },

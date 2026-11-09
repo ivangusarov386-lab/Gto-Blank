@@ -555,6 +555,7 @@ function switchBlankType(type) {
   writeSetting("gto-blank-type", blankType);
   loadTemplateConfiguration();
   fields = formLabels();
+  fillBlankAuthority();
   activeField = "surname";
   loadPrinterProfiles();
   $("profileName").value = printers[activePrinter].name;
@@ -603,6 +604,7 @@ function initWorkspace() {
     }, draft.expiresAt - Date.now());
     notify("Восстановлен локальный черновик участников.");
   } else removeSetting("gto-participant-draft");
+  fillBlankAuthority();
   workspaceReady = true;
   calibrationPast = [JSON.stringify(configuration())];
   calibrationSaved();
@@ -863,6 +865,7 @@ function initWorkspace() {
       return;
     checkpointPeople();
     people = importCandidate.people;
+    fillBlankAuthority();
     selected = 0;
     $("search").value = "";
     const name = pendingImport.name,
