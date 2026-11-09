@@ -15,6 +15,25 @@ const blankTypes = {
   silver: { label: "Серебряный", award: "СЕРЕБРЯНЫМ" },
   bronze: { label: "Бронзовый", award: "БРОНЗОВЫМ" },
 };
+// Measured preprinted baselines from the supplied scan, normalized to 140 × 95 mm.
+// Only silver was measured; bronze and gold retain their independent layouts.
+const silverMeasuredLayout = {
+  version: 2,
+  lines: [34.7, 39.9, 45.1],
+  fields: {
+    number: { x: 114, y: 25.5, size: 10 },
+    surname: { x: 79, y: 31.2, size: 11 },
+    first: { x: 79, y: 36.4, size: 11 },
+    middle: { x: 79, y: 41.6, size: 11 },
+    level: { x: 93, y: 64.3, size: 10 },
+    orderDate: { x: 88.7, y: 70.2, size: 9 },
+    orderNumber: { x: 120.5, y: 70.2, size: 9 },
+    issued: { x: 102.4, y: 87, size: 9 },
+    authority: { x: 78, y: 14.8, size: 7 },
+    signerPosition: { x: 78, y: 78.4, size: 7 },
+    signerName: { x: 112, y: 78.4, size: 7 },
+  },
+};
 let blankType = "gold";
 let defaults = structuredClone(goldDefaults);
 const optionalFields = new Set([
@@ -39,6 +58,10 @@ function defaultFields(type) {
       signerPosition: { label: "Должность", x: 78, y: 80.2, size: 7 },
       signerName: { label: "ФИО подписанта", x: 114, y: 80.2, size: 7 },
     });
+  if (type === "silver") {
+    for (const [key, value] of Object.entries(silverMeasuredLayout.fields))
+      Object.assign(result[key], value);
+  }
   return result;
 }
 function fillBlankAuthority() {
@@ -60,6 +83,9 @@ function formLabels() {
 function syncTemplateReference() {
   for (const page of document.querySelectorAll(".page")) {
     page.dataset.blank = blankType;
+    page.querySelectorAll(".line").forEach((line, index) => {
+      line.style.top = `${blankType === "silver" ? silverMeasuredLayout.lines[index] : [36, 41.3, 46.6][index]}mm`;
+    });
     page.querySelector(".otherlabel span:nth-child(2)").textContent =
       `${blankTypes[blankType].award} ЗНАКОМ ОТЛИЧИЯ`;
     page.querySelector(".minister-label").textContent =
@@ -67,13 +93,16 @@ function syncTemplateReference() {
     page.querySelector(".minister-name").textContent =
       blankType === "gold" ? "М.В. Дегтярев" : "(Ф.И.О.)";
   }
+  $("applyMeasuredLayout").hidden = blankType !== "silver";
   window.syncBlankReference?.();
   for (const radio of document.querySelectorAll('[name="blankType"]'))
     radio.checked = radio.value === blankType;
   $("blank-note").textContent =
-    blankType === "gold"
-      ? "Золотой бланк. Размер разворота 140 × 95 мм. Ранее сохранённые координаты не масштабировались. Проверьте пробной печатью."
-      : `${blankTypes[blankType].label} бланк. Дополнительные поля органа власти, должности и ФИО подписанта заполняются при необходимости. Схема по фотографии: проверьте совмещение пробной печатью.`;
+    blankType === "silver"
+      ? "Серебряная схема выровнена по строкам из вашего PDF. Даты печатаются раздельно: день, месяц прописью и две цифры года, после напечатанного «20». Для прежних сохранённых координат: Калибровка принтера → Применить схему серебра по PDF. Смещение принтера и именованные профили сохраняются."
+      : blankType === "gold"
+        ? "Золотой бланк. Размер разворота 140 × 95 мм. Ранее сохранённые координаты не масштабировались. Проверьте пробной печатью."
+        : `${blankTypes[blankType].label} бланк. Дополнительные поля органа власти, должности и ФИО подписанта заполняются при необходимости. Схема по фотографии: проверьте совмещение пробной печатью.`;
 }
 const $ = (id) => document.getElementById(id);
 const esc = (s) =>
@@ -135,6 +164,30 @@ function loadTemplateConfiguration() {
     if (typeof value === "number" && Number.isFinite(value))
       offset[key] = value;
   }
+  // Upgrade only untouched factory coordinates; custom calibrations remain recoverable.
+  const previous = defaultFields("bronze");
+  if (
+    blankType === "silver" &&
+    saved &&
+    !saved.layoutVersion &&
+    Object.keys(defaults).every((key) =>
+      ["x", "y", "size"].every(
+        (prop) => storedFields?.[key]?.[prop] === previous[key][prop],
+      ),
+    )
+  ) {
+    cfg = structuredClone(defaults);
+    writeSetting(
+      templateSetting("gto-print-config"),
+      JSON.stringify({
+        template: blankType,
+        paper: PAPER,
+        layoutVersion: 2,
+        fields: cfg,
+        offset,
+      }),
+    );
+  }
 }
 blankType = Object.hasOwn(blankTypes, readSetting("gto-blank-type"))
   ? readSetting("gto-blank-type")
@@ -146,7 +199,13 @@ let people = [],
 const save = () => {
   const result = writeSetting(
     templateSetting("gto-print-config"),
-    JSON.stringify({ template: blankType, paper: PAPER, fields: cfg, offset }),
+    JSON.stringify({
+      template: blankType,
+      paper: PAPER,
+      layoutVersion: blankType === "silver" ? 2 : 1,
+      fields: cfg,
+      offset,
+    }),
   );
   if (workspaceReady) calibrationSaved();
   return result;
@@ -253,6 +312,37 @@ function render() {
     );
   draw();
 }
+function splitDateParts(key, value) {
+  const text = String(value || "").trim();
+  if (
+    blankType !== "silver" ||
+    !["orderDate", "issued"].includes(key) ||
+    !GTO.validDate(text)
+  )
+    return null;
+  const [day, month, year] = text.split(".");
+  const months = [
+    "января",
+    "февраля",
+    "марта",
+    "апреля",
+    "мая",
+    "июня",
+    "июля",
+    "августа",
+    "сентября",
+    "октября",
+    "ноября",
+    "декабря",
+  ];
+  return {
+    day,
+    month: months[Number(month) - 1],
+    year: year.slice(-2),
+    dayWidth: key === "orderDate" ? 6.8 : 5.8,
+    monthWidth: key === "orderDate" ? 16.1 : 17.3,
+  };
+}
 function markup(p, print = false, editable = false) {
   return Object.keys(defaults)
     .map((k) => {
@@ -262,7 +352,11 @@ function markup(p, print = false, editable = false) {
       const controls = editable
         ? ` data-key="${k}" tabindex="0" role="button" aria-label="Переместить: ${esc(f.label)}" aria-describedby="drag-help"`
         : "";
-      return `<div class="field${editable ? " movable" : ""}"${controls} style="left:${x}mm;top:${y}mm;font-size:${Number(f.size)}pt">${esc(p[k] || (editable ? f.label : ""))}</div>`;
+      const parts = splitDateParts(k, p[k]);
+      const content = parts
+        ? `<span class="date-part" style="width:${parts.dayWidth}mm">${esc(parts.day)}</span><span class="date-part" style="width:${parts.monthWidth}mm">${esc(parts.month)}</span><span class="date-part">${esc(parts.year)}</span>`
+        : esc(p[k] || (editable ? f.label : ""));
+      return `<div class="field${editable ? " movable" : ""}"${controls} style="left:${x}mm;top:${y}mm;font-size:${Number(f.size)}pt">${content}</div>`;
     })
     .join("");
 }

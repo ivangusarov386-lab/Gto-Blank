@@ -89,6 +89,35 @@ function peopleChanged() {
   updateDataState();
 }
 const measureContext = document.createElement("canvas").getContext("2d");
+function printedFieldWidth(key, value, size) {
+  measureContext.font = `700 ${size}pt "Times New Roman"`;
+  const mm = (text) =>
+    (measureContext.measureText(String(text || "")).width * 25.4) / 96;
+  const parts = splitDateParts(key, value);
+  return parts
+    ? Math.max(
+        mm(parts.day),
+        parts.dayWidth + mm(parts.month),
+        parts.dayWidth + parts.monthWidth + mm(parts.year),
+      )
+    : mm(value);
+}
+function templateIssues(p) {
+  if (blankType !== "silver") return [];
+  return ["orderDate", "issued"]
+    .filter((key) => GTO.validDate(String(p[key] || "").trim()))
+    .flatMap((key) =>
+      p[key].trim().slice(-4).startsWith("20")
+        ? []
+        : [
+            {
+              key,
+              message:
+                "На серебряном бланке уже напечатано «20»: укажите год от 2000 до 2099.",
+            },
+          ],
+    );
+}
 function overflowIssues(p) {
   const issues = [];
   for (const k of Object.keys(defaults)) {
@@ -96,7 +125,7 @@ function overflowIssues(p) {
       f = cfg[k];
     if (!text) continue;
     measureContext.font = `700 ${f.size}pt "Times New Roman"`;
-    const width = (measureContext.measureText(text).width * 25.4) / 96,
+    const width = printedFieldWidth(k, p[k], f.size),
       height = (f.size * 25.4) / 72;
     if (
       f.x + offset.dx < 0 ||
@@ -117,6 +146,7 @@ function updateValidation() {
   issuesByPerson = people.map((p) => [
     ...GTO.validate(p, duplicate),
     ...overflowIssues(p),
+    ...templateIssues(p),
   ]);
   const ready = issuesByPerson.filter((a) => !a.length).length;
   $("validation").innerHTML =
@@ -305,11 +335,36 @@ function fitSelectedField() {
     return;
   }
   measureContext.font = `700 ${f.size}pt "Times New Roman"`;
-  const width = (measureContext.measureText(text).width * 25.4) / 96;
+  const width = printedFieldWidth(
+    activeField,
+    people[selected]?.[activeField],
+    f.size,
+  );
   const next = Math.min(
     f.size,
     Math.floor(((f.size * available) / Math.max(width, 0.01)) * 2) / 2,
   );
+  if (splitDateParts(activeField, people[selected]?.[activeField])) {
+    let size = f.size;
+    while (
+      size >= 6 &&
+      printedFieldWidth(activeField, people[selected]?.[activeField], size) >
+        available
+    )
+      size -= 0.5;
+    if (size < 6) {
+      notify(
+        "Раздельную дату нельзя уместить здесь. Переместите поле левее.",
+        true,
+      );
+      return;
+    }
+    f.size = size;
+    save();
+    positions();
+    draw();
+    return;
+  }
   if (next < 6) {
     notify(
       "Текст нельзя уместить при читаемом размере 6 пт. Проверьте запись или переместите поле.",
@@ -576,6 +631,22 @@ function switchBlankType(type) {
 }
 function initWorkspace() {
   loadPrinterProfiles();
+  $("applyMeasuredLayout").onclick = () => {
+    if (blankType !== "silver") return;
+    if (
+      !confirm(
+        "Применить положения и размеры полей серебряного бланка по PDF? Смещение принтера и сохранённые профили не изменятся. Действие можно отменить.",
+      )
+    )
+      return;
+    applyConfiguration({
+      fields: clone(defaultFields("silver")),
+      offset: clone(offset),
+    });
+    notify(
+      "Серебряная схема по PDF применена. Проверьте один отпечаток и сохраните профиль при точном совмещении. Действие можно отменить.",
+    );
+  };
   for (const radio of document.querySelectorAll('[name="blankType"]'))
     radio.addEventListener("change", () => switchBlankType(radio.value));
   const draft = jsonRead("gto-participant-draft");

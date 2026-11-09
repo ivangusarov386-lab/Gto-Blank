@@ -1489,3 +1489,177 @@ body.admin-mode #feedback:not([hidden]) {
 .page:not([data-blank="gold"]) .signature-rule {
   top: 82.5mm;
 }
+
+.order-prefix {
+  position: absolute;
+  left: 78mm;
+  top: 75mm;
+  font:
+    9px Georgia,
+    serif;
+  color: #687e8e;
+}
+/* Silver references measured from the supplied filled scan; these never print. */
+.page[data-blank="silver"] .booklabel {
+  left: 81mm;
+  top: 4mm;
+  width: 48mm;
+  font:
+    bold 9pt/1.12 "Times New Roman",
+    serif;
+}
+.page[data-blank="silver"] .authority-reference {
+  top: 17mm;
+  left: 77.5mm;
+  width: 53mm;
+}
+.page[data-blank="silver"] .authority-reference::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 5.4mm;
+  width: 100%;
+  border-top: 1px solid #b8ad92;
+}
+.page[data-blank="silver"] .sublabel {
+  left: 77.5mm;
+  top: 26mm;
+  font:
+    bold 9pt/1 "Times New Roman",
+    serif;
+}
+.page[data-blank="silver"] .line {
+  left: 77.5mm;
+  width: 53mm;
+}
+.page[data-blank="silver"] .otherlabel {
+  left: 77.5mm;
+  top: 47.5mm;
+  width: 53mm;
+  font:
+    bold 8pt/1.03 "Times New Roman",
+    serif;
+}
+.page[data-blank="silver"] .step-rule {
+  left: 92.5mm;
+  top: 67.5mm;
+  width: 8mm;
+}
+.page[data-blank="silver"] .step-label {
+  left: 101.5mm;
+  top: 65.4mm;
+  font-size: 9pt;
+}
+.page[data-blank="silver"] .order-prefix {
+  left: 77.5mm;
+  top: 71.4mm;
+}
+.page[data-blank="silver"] .order-suffix {
+  left: 113mm;
+  top: 71.4mm;
+}
+.page[data-blank="silver"] :is(.position-rule, .signature-rule, .signer-rule) {
+  top: 80.6mm;
+}
+.page[data-blank="silver"] .position-rule {
+  left: 77.5mm;
+  width: 18.5mm;
+}
+.page[data-blank="silver"] .signature-rule {
+  left: 97mm;
+  width: 13mm;
+}
+.page[data-blank="silver"] .signer-rule {
+  left: 111mm;
+  width: 19.5mm;
+}
+.page[data-blank="silver"] :is(.minister-label, .minister-name) {
+  top: 81.4mm;
+}
+.page[data-blank="silver"] .seal-label {
+  left: 77.5mm;
+  top: 86.8mm;
+}
+.page[data-blank="silver"] .issued-rule {
+  left: 101mm;
+  top: 89.9mm;
+  width: 26.5mm;
+}
+.page[data-blank="silver"] .issued-suffix {
+  left: 129mm;
+  top: 88mm;
+}
+
+.date-part {
+  display: inline-block;
+  vertical-align: top;
+}
+.split-date-guide {
+  display: none;
+  position: absolute;
+  pointer-events: none;
+  font:
+    8px Georgia,
+    serif;
+  color: #8b826b;
+  height: 3mm;
+}
+.split-date-guide > span {
+  position: absolute;
+  top: 0;
+}
+.split-date-guide :is(.day-blank, .month-blank, .year-blank) {
+  height: 3mm;
+  border-bottom: 1px solid #b8ad92;
+}
+.page[data-blank="silver"] .split-date-guide {
+  display: block;
+}
+.split-order-guide {
+  left: 88.7mm;
+  top: 70.25mm;
+  width: 27mm;
+}
+.split-order-guide .day-blank {
+  left: 0;
+  width: 3.5mm;
+}
+.split-order-guide .month-blank {
+  left: 6.8mm;
+  width: 13mm;
+}
+.split-order-guide .century {
+  left: 19.8mm;
+  top: 0.9mm;
+}
+.split-order-guide .year-blank {
+  left: 22.9mm;
+  width: 3.5mm;
+}
+.split-issued-guide {
+  left: 102.4mm;
+  top: 86.9mm;
+  width: 27mm;
+}
+.split-issued-guide .day-blank {
+  left: 0;
+  width: 3.5mm;
+}
+.split-issued-guide .month-blank {
+  left: 5.8mm;
+  width: 13.6mm;
+}
+.split-issued-guide .century {
+  left: 19.4mm;
+  top: 0.9mm;
+}
+.split-issued-guide .year-blank {
+  left: 23.1mm;
+  width: 3.5mm;
+}
+.page[data-blank="silver"] .order-suffix {
+  left: 115.5mm;
+}
+.page[data-blank="silver"] .issued-rule {
+  display: none;
+}
