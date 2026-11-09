@@ -9,6 +9,9 @@
     orderDate: "Дата приказа",
     orderNumber: "Номер приказа",
     issued: "Дата выдачи",
+    authority: "Орган исполнительной власти",
+    signerPosition: "Должность подписанта",
+    signerName: "ФИО подписанта",
   };
   const parts = {
     orderDay: "Приказ день",
@@ -27,6 +30,9 @@
     orderDate: ["дата приказа", "приказ дата"],
     orderNumber: ["номер приказа", "приказ номер", "order number"],
     issued: ["дата выдачи", "выдача дата"],
+    authority: ["орган исполнительной власти", "орган власти", "authority"],
+    signerPosition: ["должность подписанта", "должность", "signer position"],
+    signerName: ["фио подписанта", "подписант", "signer name"],
   };
   const clean = (value) => String(value ?? "").trim();
   function suggest(headers) {
@@ -242,6 +248,7 @@
     );
   }
   globalThis.GTO = {
+    paper: Object.freeze({ width: 140, height: 95 }),
     fields,
     parts,
     suggest,

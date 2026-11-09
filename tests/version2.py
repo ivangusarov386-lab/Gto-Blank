@@ -52,8 +52,8 @@ with sync_playwright() as p:
  (out/'certificate.pdf').write_bytes(pdf)
  size=re.search(rb'/MediaBox\s*\[\s*0\s+0\s+([0-9.]+)\s+([0-9.]+)\s*\]',pdf)
  assert size, 'PDF page dimensions were not found'
- assert abs(float(size[1])-138*72/25.4)<1 and abs(float(size[2])-99*72/25.4)<1,(size[1],size[2])
- print('PASS: compiled cascade layers preserve the physical 138 × 99 mm PDF page size')
+ assert abs(float(size[1])-140*72/25.4)<1 and abs(float(size[2])-95*72/25.4)<1,(size[1],size[2])
+ print('PASS: compiled cascade layers preserve the physical 140 × 95 mm PDF page size')
 
  for width in [320,375,768,1024,1440]:
   page.set_viewport_size({'width':width,'height':1000})

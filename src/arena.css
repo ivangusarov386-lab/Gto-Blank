@@ -987,3 +987,56 @@
     }
   }
 }
+
+@media screen {
+  .blank-controls {
+    grid-column: 1 / -1;
+    min-inline-size: 0;
+    margin: 0;
+    padding: 1rem;
+    border: 1px solid #526780;
+    border-radius: 6px;
+    color: var(--arena-text);
+  }
+  .blank-controls legend {
+    font-size: 0.875rem;
+    padding-inline: 0.5rem;
+  }
+  .blank-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+  }
+  .blank-options label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--arena-text);
+    font-size: 0.875rem;
+    min-block-size: 44px;
+    margin: 0;
+    cursor: pointer;
+  }
+  .blank-options input {
+    padding: 0;
+    flex-shrink: 0;
+    inline-size: 1.1rem;
+    block-size: 1.1rem;
+    margin: 0;
+    accent-color: var(--arena-accent);
+  }
+  .blank-options input:focus-visible {
+    outline-color: var(--arena-ice);
+  }
+  #blank-note {
+    margin: 0.65rem 0 0;
+    color: var(--arena-muted);
+    font-size: 0.75rem;
+    line-height: 1.7;
+  }
+  @media (forced-colors: active) {
+    .blank-controls {
+      border-color: CanvasText;
+    }
+  }
+}

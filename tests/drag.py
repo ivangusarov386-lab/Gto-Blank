@@ -26,7 +26,7 @@ with sync_playwright() as p:
         x, y = box['x'] + box['width'] * .2, box['y'] + box['height'] * .2
         page.mouse.move(x, y)
         page.mouse.down()
-        page.mouse.move(x + dx * frame['width'] / 138, y + dy * frame['height'] / 99, steps=8)
+        page.mouse.move(x + dx * frame['width'] / 140, y + dy * frame['height'] / 95, steps=8)
         page.mouse.up()
 
     for width in [1440, 375]:
@@ -81,7 +81,7 @@ with sync_playwright() as p:
     client = page.context.new_cdp_session(page)
     x, y = box['x'] + 2, box['y'] + 2
     client.send('Input.dispatchTouchEvent', {'type':'touchStart','touchPoints':[{'x':x,'y':y}]})
-    client.send('Input.dispatchTouchEvent', {'type':'touchMove','touchPoints':[{'x':x+frame['width']*5/138,'y':y+frame['height']*2/99}]})
+    client.send('Input.dispatchTouchEvent', {'type':'touchMove','touchPoints':[{'x':x+frame['width']*5/140,'y':y+frame['height']*2/95}]})
     client.send('Input.dispatchTouchEvent', {'type':'touchEnd','touchPoints':[]})
     assert abs(coords()['x'] - before['x'] - 5) <= .1
     assert abs(coords()['y'] - before['y'] - 2) <= .1

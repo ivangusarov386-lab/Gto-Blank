@@ -1,4 +1,4 @@
-const defaults = {
+const goldDefaults = {
   number: { label: "Номер", x: 116, y: 26, size: 10 },
   surname: { label: "Фамилия", x: 79, y: 35, size: 11 },
   first: { label: "Имя", x: 79, y: 40.2, size: 11 },
@@ -8,6 +8,60 @@ const defaults = {
   orderNumber: { label: "Номер приказа", x: 119, y: 73.4, size: 9 },
   issued: { label: "Дата выдачи", x: 108, y: 87, size: 9 },
 };
+const PAPER = GTO.paper;
+const blankTypes = {
+  gold: { label: "Золотой", award: "ЗОЛОТЫМ" },
+  silver: { label: "Серебряный", award: "СЕРЕБРЯНЫМ" },
+  bronze: { label: "Бронзовый", award: "БРОНЗОВЫМ" },
+};
+let blankType = "gold";
+let defaults = structuredClone(goldDefaults);
+const optionalFields = new Set([
+  "middle",
+  "authority",
+  "signerPosition",
+  "signerName",
+]);
+const templateSetting = (key) =>
+  blankType === "gold" ? key : `${key}-${blankType}`;
+function defaultFields(type) {
+  const result = structuredClone(goldDefaults);
+  if (type !== "gold")
+    Object.assign(result, {
+      number: { ...result.number, y: 22.5 },
+      surname: { ...result.surname, y: 32.5 },
+      first: { ...result.first, y: 37.8 },
+      middle: { ...result.middle, y: 43.1 },
+      orderDate: { ...result.orderDate, y: 74 },
+      orderNumber: { ...result.orderNumber, y: 74 },
+      authority: { label: "Орган власти", x: 78, y: 15, size: 7 },
+      signerPosition: { label: "Должность", x: 78, y: 80.2, size: 7 },
+      signerName: { label: "ФИО подписанта", x: 114, y: 80.2, size: 7 },
+    });
+  return result;
+}
+function formLabels() {
+  return Object.fromEntries(
+    Object.keys(defaults).map((k) => [k, GTO.fields[k]]),
+  );
+}
+function syncTemplateReference() {
+  for (const page of document.querySelectorAll(".page")) {
+    page.dataset.blank = blankType;
+    page.querySelector(".otherlabel span:nth-child(2)").textContent =
+      `${blankTypes[blankType].award} ЗНАКОМ ОТЛИЧИЯ`;
+    page.querySelector(".minister-label").textContent =
+      blankType === "gold" ? "Министр спорта" : "(должность)";
+    page.querySelector(".minister-name").textContent =
+      blankType === "gold" ? "М.В. Дегтярев" : "(Ф.И.О.)";
+  }
+  for (const radio of document.querySelectorAll('[name="blankType"]'))
+    radio.checked = radio.value === blankType;
+  $("blank-note").textContent =
+    blankType === "gold"
+      ? "Золотой бланк. Размер разворота 140 × 95 мм. Ранее сохранённые координаты не масштабировались. Проверьте пробной печатью."
+      : `${blankTypes[blankType].label} бланк. Дополнительные поля органа власти, должности и ФИО подписанта заполняются при необходимости. Схема по фотографии: проверьте совмещение пробной печатью.`;
+}
 const $ = (id) => document.getElementById(id);
 const esc = (s) =>
   String(s ?? "").replace(
@@ -44,34 +98,42 @@ function writeSetting(key, value) {
     return false;
   }
 }
-let saved;
-try {
-  saved = JSON.parse(readSetting("gto-print-config"));
-} catch {}
-let cfg = structuredClone(defaults);
-const storedFields = saved?.fields || saved;
-for (const key of Object.keys(defaults)) {
-  for (const prop of ["x", "y", "size"]) {
-    const value = storedFields?.[key]?.[prop];
-    if (
-      typeof value === "number" &&
-      Number.isFinite(value) &&
-      (prop !== "size" || value > 0)
-    )
-      cfg[key][prop] = value;
+function loadTemplateConfiguration() {
+  defaults = defaultFields(blankType);
+  let saved;
+  try {
+    saved = JSON.parse(readSetting(templateSetting("gto-print-config")));
+  } catch {}
+  cfg = structuredClone(defaults);
+  const storedFields = saved?.fields || saved;
+  for (const key of Object.keys(defaults))
+    for (const prop of ["x", "y", "size"]) {
+      const value = storedFields?.[key]?.[prop];
+      if (
+        typeof value === "number" &&
+        Number.isFinite(value) &&
+        (prop !== "size" || (value >= 4 && value <= 72))
+      )
+        cfg[key][prop] = value;
+    }
+  offset = { dx: 0, dy: 0 };
+  for (const key of ["dx", "dy"]) {
+    const value = saved?.offset?.[key];
+    if (typeof value === "number" && Number.isFinite(value))
+      offset[key] = value;
   }
 }
+blankType = Object.hasOwn(blankTypes, readSetting("gto-blank-type"))
+  ? readSetting("gto-blank-type")
+  : "gold";
+let cfg, offset;
+loadTemplateConfiguration();
 let people = [],
   selected = 0;
-let offset = { dx: 0, dy: 0 };
-for (const key of ["dx", "dy"]) {
-  const value = saved?.offset?.[key];
-  if (typeof value === "number" && Number.isFinite(value)) offset[key] = value;
-}
 const save = () => {
   const result = writeSetting(
-    "gto-print-config",
-    JSON.stringify({ fields: cfg, offset }),
+    templateSetting("gto-print-config"),
+    JSON.stringify({ template: blankType, paper: PAPER, fields: cfg, offset }),
   );
   if (workspaceReady) calibrationSaved();
   return result;
@@ -87,6 +149,9 @@ function sample() {
       orderDate: "12.03.2026",
       orderNumber: "001 ПР",
       issued: "20.03.2026",
+      authority: "Учебный отдел спорта",
+      signerPosition: "Руководитель",
+      signerName: "Примеров И. И.",
     },
     {
       number: "ДЕМО002",
@@ -97,6 +162,9 @@ function sample() {
       orderDate: "12.03.2026",
       orderNumber: "001 ПР",
       issued: "20.03.2026",
+      authority: "Учебный отдел спорта",
+      signerPosition: "Руководитель",
+      signerName: "Примеров И. И.",
     },
     {
       number: "ДЕМО003",
@@ -107,21 +175,15 @@ function sample() {
       orderDate: "12.03.2026",
       orderNumber: "001 ПР",
       issued: "20.03.2026",
+      authority: "Учебный отдел спорта",
+      signerPosition: "Руководитель",
+      signerName: "Примеров И. И.",
     },
   ];
   selected = 0;
   render();
 }
-const fields = {
-  number: "Номер удостоверения",
-  surname: "Фамилия",
-  first: "Имя",
-  middle: "Отчество",
-  level: "Ступень",
-  orderDate: "Дата приказа",
-  orderNumber: "Номер приказа",
-  issued: "Дата выдачи",
-};
+let fields = formLabels();
 function renderNames() {
   const q = $("search").value.trim().toLocaleLowerCase("ru");
   const matches = people
@@ -159,7 +221,7 @@ function render() {
   $("form").innerHTML = Object.entries(fields)
     .map(
       ([k, l]) =>
-        `<div><label for="field-${k}">${l}${k === "middle" ? "" : " *"}</label><input id="field-${k}" data-field="${k}" value="${esc(p[k])}" autocomplete="off" aria-describedby="error-${k}"${k === "middle" ? "" : ' aria-required="true"'}><span id="error-${k}" class="field-error"></span></div>`,
+        `<div><label for="field-${k}">${l}${optionalFields.has(k) ? "" : " *"}</label><input id="field-${k}" data-field="${k}" value="${esc(p[k])}" autocomplete="off" aria-describedby="error-${k}"${optionalFields.has(k) ? "" : ' aria-required="true"'}><span id="error-${k}" class="field-error"></span></div>`,
     )
     .join("");
   $("form")
@@ -192,6 +254,7 @@ function markup(p, print = false, editable = false) {
     .join("");
 }
 function draw() {
+  syncTemplateReference();
   $("preview-person").textContent =
     [
       people[selected]?.surname,
@@ -239,9 +302,9 @@ function positions() {
 const editor = $("page");
 let drag = null;
 function moveField(key, x, y, element) {
-  const pixelsPerMm = parseFloat(getComputedStyle(editor).width) / 138;
-  const maxX = Math.max(0, 138 - element.offsetWidth / pixelsPerMm);
-  const maxY = Math.max(0, 99 - element.offsetHeight / pixelsPerMm);
+  const pixelsPerMm = parseFloat(getComputedStyle(editor).width) / PAPER.width;
+  const maxX = Math.max(0, PAPER.width - element.offsetWidth / pixelsPerMm);
+  const maxY = Math.max(0, PAPER.height - element.offsetHeight / pixelsPerMm);
   cfg[key].x =
     Math.round((Math.min(maxX, Math.max(0, x + offset.dx)) - offset.dx) * 10) /
     10;
@@ -296,8 +359,8 @@ editor.addEventListener("pointermove", (event) => {
   if (!drag || event.pointerId !== drag.id) return;
   moveField(
     drag.key,
-    drag.x + ((event.clientX - drag.startX) * 138) / drag.width,
-    drag.y + ((event.clientY - drag.startY) * 99) / drag.height,
+    drag.x + ((event.clientX - drag.startX) * PAPER.width) / drag.width,
+    drag.y + ((event.clientY - drag.startY) * PAPER.height) / drag.height,
     drag.field,
   );
 });
@@ -390,6 +453,9 @@ function toCSV() {
     "Выдача день",
     "Выдача месяц",
     "Выдача год",
+    "Орган исполнительной власти",
+    "Должность подписанта",
+    "ФИО подписанта",
   ];
   const blob = new Blob(["\ufeff" + headings.join(";") + "\n"], {
     type: "text/csv;charset=utf-8",
@@ -440,7 +506,8 @@ $("tabAdmin").onclick = () => {
 };
 $("dx").value = offset.dx;
 $("dy").value = offset.dy;
-$("profileName").value = readSetting("gto-profile-name") || "Основной принтер";
+$("profileName").value =
+  readSetting(templateSetting("gto-profile-name")) || "Основной принтер";
 $("saveProfile").onclick = savePrinterProfile;
 for (const id of ["tabWork", "tabAdmin"])
   $(id).addEventListener("click", () => {

@@ -890,8 +890,8 @@ body.admin-mode #feedback:not([hidden]) {
 }
 .page {
   position: relative;
-  width: 138mm;
-  height: 99mm;
+  width: 140mm;
+  height: 95mm;
   flex-shrink: 0;
   background: #dce9ed;
   border: 1px solid #92a8b7;
@@ -929,10 +929,10 @@ body.admin-mode #feedback:not([hidden]) {
 }
 .right-half {
   position: absolute;
-  left: 69mm;
+  left: 70mm;
   top: 0;
-  width: 69mm;
-  height: 99mm;
+  width: 70mm;
+  height: 95mm;
   border-left: 0 solid transparent;
   pointer-events: none;
 }
@@ -1345,7 +1345,7 @@ body.admin-mode #feedback:not([hidden]) {
 }
 @media print {
   @page {
-    size: 138mm 99mm;
+    size: 140mm 95mm;
     margin: 0;
   }
   body {
@@ -1362,8 +1362,8 @@ body.admin-mode #feedback:not([hidden]) {
     display: block !important;
   }
   .print-sheet {
-    width: 138mm;
-    height: 99mm;
+    width: 140mm;
+    height: 95mm;
     position: relative;
     page-break-after: always;
     break-after: page;
@@ -1439,4 +1439,53 @@ body.admin-mode #feedback:not([hidden]) {
 .issued-suffix {
   left: 132mm;
   top: 88mm;
+}
+
+/* Non-gold preprinted references are never inserted into the print root. */
+.authority-reference {
+  display: none;
+  position: absolute;
+  left: 78mm;
+  top: 18mm;
+  width: 55mm;
+  border-top: 1px solid #b8ad92;
+  padding-top: 1mm;
+  text-align: center;
+  font:
+    5px Georgia,
+    serif;
+  color: #8b826b;
+  pointer-events: none;
+}
+.page:not([data-blank="gold"]) .authority-reference {
+  display: block;
+}
+.page:not([data-blank="gold"]) .minister-label,
+.page:not([data-blank="gold"]) .minister-name {
+  top: 83.2mm;
+  font-size: 6px;
+}
+
+.position-rule,
+.signer-rule {
+  display: none;
+  position: absolute;
+  top: 82.5mm;
+  border-bottom: 1px solid #b8ad92;
+  pointer-events: none;
+}
+.position-rule {
+  left: 78mm;
+  width: 20mm;
+}
+.signer-rule {
+  left: 114mm;
+  width: 19mm;
+}
+.page:not([data-blank="gold"]) .position-rule,
+.page:not([data-blank="gold"]) .signer-rule {
+  display: block;
+}
+.page:not([data-blank="gold"]) .signature-rule {
+  top: 82.5mm;
 }

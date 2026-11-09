@@ -11,6 +11,9 @@ const person = {
   orderDate: "29.02.2024",
   orderNumber: "153 НГ",
   issued: "01.03.2024",
+  authority: "",
+  signerPosition: "",
+  signerName: "",
 };
 test("required fields permit absent patronymic but reject absent name", () => {
   assert.deepEqual(G.validate(person), []);
@@ -85,4 +88,17 @@ test("source line numbers account for Excel range offset and skipped blank rows"
     result.people.map((p) => p._row),
     [6, 8],
   );
+});
+
+test("silver and bronze issuer details survive CSV export/import", () => {
+  const original = {
+    ...person,
+    authority: 'Учебный орган "Спорт"',
+    signerPosition: "Руководитель",
+    signerName: "Примеров И. И.",
+  };
+  const table = G.parseCSV(G.csv([original]));
+  const [row] = G.mapRows(table.rows, G.suggest(table.headers)).people;
+  delete row._row;
+  assert.deepEqual(row, original);
 });

@@ -15,7 +15,7 @@
       href="assets/favicon.svg?v=312a12cb901c"
       type="image/svg+xml"
     />
-    <link rel="stylesheet" href="assets/site-v2.css?v=f63e92e3423d" />
+    <link rel="stylesheet" href="assets/site-v2.css?v=fcb170150c5f" />
     <link
       id="golos-preload"
       rel="preload"
@@ -153,7 +153,7 @@
           </div>
           <div>
             <dt>Формат бланка</dt>
-            <dd>138 × 99 <span>мм</span></dd>
+            <dd>140 × 95 <span>мм</span></dd>
           </div>
           <div>
             <dt>Масштаб печати</dt>
@@ -310,6 +310,40 @@
           Калибровка принтера
         </button>
       </nav>
+      <fieldset class="blank-controls" aria-describedby="blank-note">
+        <legend>Тип бланка для текущего тиража</legend>
+        <div class="blank-options">
+          <label for="blank-gold"
+            ><input
+              id="blank-gold"
+              type="radio"
+              name="blankType"
+              value="gold"
+              checked
+            />Золотой</label
+          >
+          <label for="blank-silver"
+            ><input
+              id="blank-silver"
+              type="radio"
+              name="blankType"
+              value="silver"
+            />Серебряный</label
+          >
+          <label for="blank-bronze"
+            ><input
+              id="blank-bronze"
+              type="radio"
+              name="blankType"
+              value="bronze"
+            />Бронзовый</label
+          >
+        </div>
+        <p id="blank-note">
+          Размер разворота 140 × 95 мм. Проверьте положение текста пробной
+          печатью.
+        </p>
+      </fieldset>
       <ol
         role="list"
         class="workflow"
@@ -437,7 +471,7 @@
         </div>
         <div class="printhelp">
           Важно: включите масштаб 100% / «Фактический размер», отключите
-          колонтитулы. Размер бумаги 138 × 99 мм должен поддерживаться драйвером
+          колонтитулы. Размер бумаги 140 × 95 мм должен поддерживаться драйвером
           принтера. Сначала протестируйте печать на обычной бумаге.
         </div>
       </section>
@@ -460,7 +494,7 @@
             </svg>
             Предпросмотр
           </h2>
-          <span class="tag">138 × 99 мм</span>
+          <span class="tag">140 × 95 мм</span>
         </div>
         <div id="preview-person" class="preview-person"></div>
         <p class="note">
@@ -472,6 +506,10 @@
           <div class="page" id="pageOperator">
             <div class="booklabel">
               МИНИСТЕРСТВО СПОРТА<br />РОССИЙСКОЙ ФЕДЕРАЦИИ
+            </div>
+            <div class="authority-reference">
+              (наименование органа исполнительной власти субъекта Российской
+              Федерации)
             </div>
             <div class="sublabel">УДОСТОВЕРЕНИЕ №</div>
             <div class="line" style="top: 36mm"></div>
@@ -504,6 +542,8 @@
             <div class="order-suffix">г. №</div>
             <div class="minister-label">Министр спорта</div>
             <div class="signature-rule" aria-hidden="true"></div>
+            <div class="position-rule" aria-hidden="true"></div>
+            <div class="signer-rule" aria-hidden="true"></div>
             <div class="minister-name">М.В. Дегтярев</div>
             <div class="seal-label">М.П.</div>
             <div class="issued-rule" aria-hidden="true"></div>
@@ -525,7 +565,7 @@
       <section class="panel" id="admin-panel">
         <div class="row" style="justify-content: space-between">
           <h2 style="margin: 0">Настройка шаблона и калибровка</h2>
-          <span class="tag">Разворот 138 × 99 мм</span>
+          <span class="tag">Разворот 140 × 95 мм</span>
         </div>
         <div class="mutedbox">
           Настройте положение текста под ваш бланк и принтер. Калибровка
@@ -618,6 +658,10 @@
             <div class="booklabel">
               МИНИСТЕРСТВО СПОРТА<br />РОССИЙСКОЙ ФЕДЕРАЦИИ
             </div>
+            <div class="authority-reference">
+              (наименование органа исполнительной власти субъекта Российской
+              Федерации)
+            </div>
             <div class="sublabel">УДОСТОВЕРЕНИЕ №</div>
             <div class="line" style="top: 36mm"></div>
             <div class="line" style="top: 41.3mm"></div>
@@ -649,6 +693,8 @@
             <div class="order-suffix">г. №</div>
             <div class="minister-label">Министр спорта</div>
             <div class="signature-rule" aria-hidden="true"></div>
+            <div class="position-rule" aria-hidden="true"></div>
+            <div class="signer-rule" aria-hidden="true"></div>
             <div class="minister-name">М.В. Дегтярев</div>
             <div class="seal-label">М.П.</div>
             <div class="issued-rule" aria-hidden="true"></div>
@@ -761,7 +807,7 @@
       <h2 id="print-review-title">Проверка тиража перед печатью</h2>
       <div id="print-review-body"></div>
       <p class="note">
-        Печать: фактический размер 100%, без колонтитулов, бумага 138 × 99 мм.
+        Печать: фактический размер 100%, без колонтитулов, бумага 140 × 95 мм.
         Сначала проверьте один бланк.
       </p>
       <div class="dialog-actions">
@@ -772,9 +818,9 @@
     </dialog>
     <div id="measure-root" aria-hidden="true"></div>
     <div id="print-root" style="display: none"></div>
-    <script src="assets/data.js?v=c2028d4a67fd" defer></script>
-    <script src="assets/workspace.js?v=5d5c2b6e76bd" defer></script>
-    <script src="assets/app.js?v=49039839f3c3" defer></script>
+    <script src="assets/data.js?v=d37d0a3e435a" defer></script>
+    <script src="assets/workspace.js?v=f9010e7f1c11" defer></script>
+    <script src="assets/app.js?v=d5ba984416a2" defer></script>
     <script type="module" src="assets/experience.js?v=0f4b20ee94fd"></script>
   </body>
 </html>

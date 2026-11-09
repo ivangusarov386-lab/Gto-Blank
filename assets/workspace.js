@@ -101,8 +101,8 @@ function overflowIssues(p) {
     if (
       f.x + offset.dx < 0 ||
       f.y + offset.dy < 0 ||
-      f.x + offset.dx + width > 138 + 0.02 ||
-      f.y + offset.dy + height > 99 + 0.02
+      f.x + offset.dx + width > PAPER.width + 0.02 ||
+      f.y + offset.dy + height > PAPER.height + 0.02
     )
       issues.push({
         key: k,
@@ -198,6 +198,8 @@ function applyConfiguration(value) {
   draw();
 }
 function validConfiguration(value) {
+  if (value?.template && value.template !== blankType)
+    throw Error("Калибровка предназначена для другого типа бланка.");
   if (!value || typeof value !== "object" || !value.fields || !value.offset)
     throw Error("В файле нет калибровки fields/offset.");
   const result = { fields: clone(defaults), offset: {} };
@@ -223,8 +225,13 @@ function validConfiguration(value) {
 }
 function persistProfiles() {
   return writeSetting(
-    "gto-printer-profiles",
-    JSON.stringify({ version: 1, activeId: activePrinter, profiles: printers }),
+    templateSetting("gto-printer-profiles"),
+    JSON.stringify({
+      version: 1,
+      template: blankType,
+      activeId: activePrinter,
+      profiles: printers,
+    }),
   );
 }
 function profileOptions() {
@@ -257,7 +264,7 @@ function savePrinterProfile() {
   activePrinter = id;
   $("profileName").value = name;
   const saved = persistProfiles();
-  const named = writeSetting("gto-profile-name", name);
+  const named = writeSetting(templateSetting("gto-profile-name"), name);
   const calibrated = save();
   profileOptions();
   if (saved && named && calibrated)
@@ -292,7 +299,7 @@ function fitSelectedField() {
   );
   if (!text) return;
   const f = cfg[activeField],
-    available = 138 - (f.x + offset.dx);
+    available = PAPER.width - (f.x + offset.dx);
   if (available <= 0 || f.x + offset.dx < 0) {
     notify("Сначала переместите начало поля внутрь бланка.", true);
     return;
@@ -510,9 +517,11 @@ function previewImport() {
       .join("") +
     "</tbody>";
 }
-function initWorkspace() {
+function loadPrinterProfiles() {
+  printers = {};
+  activePrinter = "";
   // Migrate only non-personal printer settings. Existing legacy coordinates stay intact.
-  const stored = jsonRead("gto-printer-profiles");
+  const stored = jsonRead(templateSetting("gto-printer-profiles"));
   if (
     stored?.version === 1 &&
     stored.profiles &&
@@ -532,11 +541,42 @@ function initWorkspace() {
   if (!Object.keys(printers).length) {
     activePrinter = crypto.randomUUID();
     printers[activePrinter] = {
-      name: readSetting("gto-profile-name") || "Основной принтер",
+      name:
+        readSetting(templateSetting("gto-profile-name")) || "Основной принтер",
       ...configuration(),
     };
   }
   profileOptions();
+}
+function switchBlankType(type) {
+  if (!Object.hasOwn(blankTypes, type) || type === blankType) return;
+  save();
+  blankType = type;
+  writeSetting("gto-blank-type", blankType);
+  loadTemplateConfiguration();
+  fields = formLabels();
+  activeField = "surname";
+  loadPrinterProfiles();
+  $("profileName").value = printers[activePrinter].name;
+  $("dx").value = offset.dx;
+  $("dy").value = offset.dy;
+  $("fieldSelect").innerHTML = Object.entries(fields)
+    .map(([k, label]) => `<option value="${k}">${esc(label)}</option>`)
+    .join("");
+  calibrationPast = [JSON.stringify(configuration())];
+  calibrationFuture = [];
+  positions();
+  render();
+  fitPreviews();
+  calibrationSaved();
+  notify(
+    `Выбран ${blankTypes[type].label.toLowerCase()} бланк, 140 × 95 мм. Калибровка и профили хранятся отдельно для каждого типа.`,
+  );
+}
+function initWorkspace() {
+  loadPrinterProfiles();
+  for (const radio of document.querySelectorAll('[name="blankType"]'))
+    radio.addEventListener("change", () => switchBlankType(radio.value));
   const draft = jsonRead("gto-participant-draft");
   if (
     draft?.version === 1 &&
@@ -566,7 +606,7 @@ function initWorkspace() {
   workspaceReady = true;
   calibrationPast = [JSON.stringify(configuration())];
   calibrationSaved();
-  $("fieldSelect").innerHTML = Object.entries(GTO.fields)
+  $("fieldSelect").innerHTML = Object.entries(fields)
     .map(([k, label]) => `<option value="${k}">${label}</option>`)
     .join("");
   $("fieldSelect").onchange = () => {
@@ -699,7 +739,7 @@ function initWorkspace() {
     calibrationPast = [JSON.stringify(configuration())];
     calibrationFuture = [];
     $("profileName").value = printers[id].name;
-    writeSetting("gto-profile-name", printers[id].name);
+    writeSetting(templateSetting("gto-profile-name"), printers[id].name);
     persistProfiles();
     calibrationSaved();
   };
@@ -719,7 +759,10 @@ function initWorkspace() {
     calibrationPast = [JSON.stringify(configuration())];
     calibrationFuture = [];
     $("profileName").value = printers[activePrinter].name;
-    writeSetting("gto-profile-name", printers[activePrinter].name);
+    writeSetting(
+      templateSetting("gto-profile-name"),
+      printers[activePrinter].name,
+    );
     persistProfiles();
     profileOptions();
     calibrationSaved();
@@ -739,9 +782,14 @@ function initWorkspace() {
         ...configuration(),
       };
     downloadFile(
-      "gto_printers.json",
+      `gto_printers_${blankType}.json`,
       JSON.stringify(
-        { version: 1, profiles: Object.values(profiles) },
+        {
+          version: 1,
+          template: blankType,
+          paper: PAPER,
+          profiles: Object.values(profiles),
+        },
         null,
         2,
       ),
@@ -755,6 +803,8 @@ function initWorkspace() {
       if (file.size > 1024 * 1024)
         throw Error("Калибровка должна быть меньше 1 МБ.");
       const value = JSON.parse(await file.text());
+      if (value.template && value.template !== blankType)
+        throw Error("Сначала выберите тип бланка из файла калибровки.");
       if (
         value.version !== 1 ||
         !Array.isArray(value.profiles) ||
