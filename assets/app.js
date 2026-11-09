@@ -67,6 +67,7 @@ function syncTemplateReference() {
     page.querySelector(".minister-name").textContent =
       blankType === "gold" ? "М.В. Дегтярев" : "(Ф.И.О.)";
   }
+  window.syncBlankReference?.();
   for (const radio of document.querySelectorAll('[name="blankType"]'))
     radio.checked = radio.value === blankType;
   $("blank-note").textContent =

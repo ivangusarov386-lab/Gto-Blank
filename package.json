@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "check": "node --check assets/app.js && node --check assets/data.js && node --check assets/workspace.js && node --check assets/experience.js && node --check src/hero-3d.js",
+    "check": "node --check assets/app.js && node --check assets/data.js && node --check assets/workspace.js && node --check assets/experience.js && node --check assets/calibration.js && node --check src/hero-3d.js",
     "dev": "python3 -m http.server 8950 --bind 127.0.0.1",
     "test": "node --test tests/data.test.js"
   },

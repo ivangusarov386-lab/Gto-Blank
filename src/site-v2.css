@@ -3,6 +3,7 @@
 @import "../assets/styles.css" layer(legacy);
 @import "../assets/premium.css" layer(legacy);
 @import "../assets/workspace.css" layer(legacy);
+@import "./calibration.css" layer(v2);
 @import "./arena.css" layer(art);
 @font-face {
   font-family: "Golos";

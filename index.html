@@ -15,7 +15,7 @@
       href="assets/favicon.svg?v=312a12cb901c"
       type="image/svg+xml"
     />
-    <link rel="stylesheet" href="assets/site-v2.css?v=fcb170150c5f" />
+    <link rel="stylesheet" href="assets/site-v2.css?v=53168d0ba355" />
     <link
       id="golos-preload"
       rel="preload"
@@ -612,6 +612,45 @@
           На экране показан ориентировочный разворот. При печати выводится
           <b>только переменный текст</b>, без фона и линий.
         </p>
+        <details class="calibration-checks">
+          <summary>Проверка масштаба и подложка вашего бланка</summary>
+          <p class="note">
+            Сначала напечатайте контрольный лист на обычной бумаге 140 × 95 мм с
+            масштабом 100%, без колонтитулов. Измерьте линейки: горизонтальная
+            должна быть 100 мм, вертикальная — 60 мм. Если размеры другие,
+            проверьте масштаб и формат бумаги в настройках принтера. Один общий
+            сдвиг это не исправит.
+          </p>
+          <button id="printCalibration" class="secondary" type="button">
+            Напечатать контрольный лист
+          </button>
+          <p class="note" id="reference-help">
+            Для совмещения используйте ровный скан чистого разворота, обрезанный
+            точно по краям 140 × 95 мм. Изображение не отправляется на сервер,
+            не сохраняется после закрытия страницы и не печатается.
+          </p>
+          <label class="file-button" for="blankReference"
+            >Загрузить скан своего бланка<input
+              id="blankReference"
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              aria-describedby="reference-help"
+          /></label>
+          <label for="referenceOpacity">Видимость подложки</label
+          ><input
+            id="referenceOpacity"
+            type="range"
+            min="10"
+            max="100"
+            value="65"
+            step="5"
+            disabled
+          />
+          <button id="removeReference" class="secondary" type="button" disabled>
+            Убрать подложку
+          </button>
+          <p id="referenceStatus" class="note" role="status"></p>
+        </details>
         <div class="calibration-toolbar">
           <div>
             <label for="fieldSelect">Поле для настройки</label
@@ -820,7 +859,8 @@
     <div id="print-root" style="display: none"></div>
     <script src="assets/data.js?v=d37d0a3e435a" defer></script>
     <script src="assets/workspace.js?v=58ea47071211" defer></script>
-    <script src="assets/app.js?v=13927f11da1a" defer></script>
+    <script src="assets/app.js?v=4b9ffe33d3b6" defer></script>
+    <script src="assets/calibration.js?v=6f818597b928" defer></script>
     <script type="module" src="assets/experience.js?v=0f4b20ee94fd"></script>
   </body>
 </html>

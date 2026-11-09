@@ -1,0 +1,58 @@
+/* Local scan references are confined to screen previews, never the print DOM. */
+@media screen {
+  .calibration-checks {
+    margin-block: 1.25rem;
+    padding: 1rem;
+    border: 1px solid #8490a1;
+    border-radius: 8px;
+    background: #f3f6fb;
+  }
+  .calibration-checks summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #354c6a;
+    min-block-size: 44px;
+    display: list-item;
+  }
+  .calibration-checks .note {
+    margin-block: 0.75rem;
+  }
+  .calibration-checks .file-button {
+    margin-block: 1rem;
+  }
+  .calibration-checks label {
+    margin-block-start: 0.75rem;
+  }
+  #referenceOpacity {
+    padding: 0;
+    accent-color: #244b83;
+  }
+  .blank-reference-image {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: fill;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .page.has-reference {
+    background: #fff;
+  }
+  .page.has-reference::before,
+  .page.has-reference::after {
+    display: none;
+  }
+  .page.has-reference > :not(.field):not(.blank-reference-image) {
+    display: none;
+  }
+  .page.has-reference > .field {
+    z-index: 1;
+  }
+}
+@media print {
+  .blank-reference-image {
+    display: none !important;
+  }
+}
